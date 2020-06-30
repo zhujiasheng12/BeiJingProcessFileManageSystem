@@ -1,0 +1,526 @@
+﻿using System;
+using System.Collections.Generic;
+using System.IO;
+using System.Linq;
+using System.Web;
+using 北京工艺文件管理MVC.Database;
+
+namespace 北京工艺文件管理MVC.Models
+{
+    public class CompontInfoManage
+    {
+        public static List<CompontInfo> GetTaskInfo(int parentID, string orderNum)
+        {
+            try
+            {
+                List<CompontInfo> compontInfos = new List<CompontInfo>();
+                using (Model1 model = new Model1())
+                {
+                    var compont = model.JDJS_PDMS_CompontInfo_Table.Where(r => r.ParentID == parentID && r.state == "正常");
+                    foreach (var item in compont)
+                    {
+                        CompontInfo compontInfo = new CompontInfo();
+                        compontInfo.componentID = parentID;
+                        compontInfo.taskName = item.ComponentName;
+                        compontInfo.taskNum = item.ComponentNum;
+                        compontInfo.allConponentNum = orderNum + item.ComponentNum ;
+                        compontInfo.creatPersonID = item.CreatPersonID == null ? 0 : Convert.ToInt32(item.CreatPersonID);
+                        compontInfo.creatPersonName = "";
+                        var staffCreat = model.JDJS_PDMS_Staff_Table.Where(r => r.ID == item.CreatPersonID && r.state == "正常").FirstOrDefault();
+                        if (staffCreat != null)
+                        {
+                            compontInfo.creatPersonName = staffCreat.StaffName;
+                        }
+                        compontInfo.staffID = compontInfo.creatPersonID;
+                        compontInfo.staffName = compontInfo.creatPersonName;
+                        compontInfo.creatTime = item.CreatTime == null ? DateTime.Now : Convert.ToDateTime(item.CreatTime);
+                        compontInfo.creatTimeStr = item.CreatTime == null ? "" : item.CreatTime.ToString().Substring(0, item.CreatTime.ToString().LastIndexOf(':'));
+                        compontInfo.id = item.ID;
+                        compontInfo.lastAlterPersonID = item.LastAlterPersonID == null ? 0 : Convert.ToInt32(item.LastAlterPersonID);
+                        compontInfo.lastAlterPersonName = "";
+                        var stafflastAlter = model.JDJS_PDMS_Staff_Table.Where(r => r.ID == item.LastAlterPersonID && r.state == "正常").FirstOrDefault();
+                        if (stafflastAlter != null)
+                        {
+                            compontInfo.lastAlterPersonName = stafflastAlter.StaffName;
+                        }
+                        compontInfo.ispart = false;
+                        compontInfo.lastAlterTime = item.LastAlterTime == null ? DateTime.Now : Convert.ToDateTime(item.LastAlterTime);
+                        compontInfo.lastAlterTimeStr = item.LastAlterTime == null ? "" : item.LastAlterTime.ToString().Substring(item.LastAlterTime.ToString().LastIndexOf(':'));
+                        compontInfo.planEndTime = item.PlanEndTime == null ? DateTime.Now.AddYears (1) : Convert.ToDateTime(item.PlanEndTime);
+                        compontInfo.planEndTimeStr = item.PlanEndTime == null ? "" : item.PlanEndTime.ToString().Substring(0, item.PlanEndTime.ToString().LastIndexOf(':'));
+                        compontInfo.planStartTime = item.PlanStartTime == null ? DateTime.Now : Convert.ToDateTime(item.PlanStartTime);
+                        compontInfo.planStartTimeStr = item.PlanStartTime == null ? "" : item.PlanStartTime.ToString().Substring(0, item.PlanStartTime.ToString().LastIndexOf(':'));
+                        
+
+                        compontInfo.children = CompontInfoManage.GetTaskInfo(item.ID, compontInfo.allConponentNum + ".");
+
+                        if (compontInfo.children != null)
+                        {
+                            foreach (var real in compontInfo.children)
+                            {
+                                compontInfo.allTaskNum += real.allTaskNum;
+                                compontInfo.unfinishedNum += real.unfinishedNum;
+                            }
+                        }
+                            int unfinish = 0;
+                        var list = TaskInfoManage.GetPartTaskInfo(item.ID, compontInfo.allConponentNum + ".", out unfinish);
+                        compontInfo.children.AddRange(list);
+                        compontInfo.allTaskNum += list.Count();
+                        compontInfo.unfinishedNum += unfinish;
+                        compontInfo.demandTime = compontInfo.planEndTime;
+                        compontInfo.demandTimeStr = compontInfo.planEndTimeStr;
+                        compontInfos.Add(compontInfo);
+                    }
+                }
+                compontInfos = compontInfos.OrderByDescending(r => r.unfinishedNum).ThenBy(r => r.planCompletionTime).ToList ();
+                return compontInfos;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+        /// <summary>
+        /// 添加产品组件
+        /// </summary>
+        /// <param name="parent">父节点主键ID</param>
+        /// <param name="compontName">节点名称</param>
+        /// <param name="compontNum">节点号</param>
+        /// <param name="creatPersonID">创建人ID</param>
+        /// <param name="planStartTime">计划开始时间</param>
+        /// <param name="planEndTime">计划结束时间</param>
+        /// <param name="errMsg">错误信息</param>
+        /// <returns>是否成功</returns>
+        public static bool AddCompont(int parent, string compontName, string compontNum, int creatPersonID, DateTime planStartTime, DateTime planEndTime, ref string errMsg)
+        {
+            try
+            {
+                using (Model1 model = new Model1())
+                {
+                    using (System.Data.Entity.DbContextTransaction mytran = model.Database.BeginTransaction())
+                    {
+                        try
+                        {
+                            var compont = model.JDJS_PDMS_CompontInfo_Table.Where(r => r.ParentID == parent && r.ComponentNum == compontNum && r.state == "正常");
+                            if (compont.Count() > 0)
+                            {
+                                mytran.Rollback();
+                                errMsg = "该编号已存在，请重新输入！";
+                                return false;
+                            }
+                            var task = model.JDJS_PDMS_TaskInfo_Table.Where(r => r.ComponentID == parent && r.TaskNum == compontNum && r.state == "正常");
+                            if (task.Count() > 0)
+                            {
+                                mytran.Rollback();
+                                errMsg = "该编号已存在，请重新输入！";
+                                return false;
+                            }
+                            JDJS_PDMS_CompontInfo_Table jd = new JDJS_PDMS_CompontInfo_Table()
+                            {
+                                ComponentName =compontName ,
+                                ComponentNum =compontNum ,
+                                CreatPersonID =creatPersonID ,
+                                CreatTime =DateTime .Now ,
+                                LastAlterPersonID =creatPersonID ,
+                                LastAlterTime =DateTime .Now ,
+                                ParentID =parent ,
+                                PlanEndTime =planEndTime ,
+                                PlanStartTime =planStartTime ,
+                                state ="正常"
+                            };
+                            model.JDJS_PDMS_CompontInfo_Table.Add(jd);
+                            model.SaveChanges();
+                            mytran.Commit();
+                            errMsg = "ok";
+                            return true;
+                        }
+                        catch (Exception ex)
+                        {
+                            mytran.Rollback();
+                            errMsg = ex.Message;
+                            return false;
+
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                errMsg = ex.Message;
+                return false;
+            }
+        }
+
+        /// <summary>
+        /// 删除产品组件
+        /// </summary>
+        /// <param name="compontID">组件ID</param>
+        /// <param name="deletePersonID">删除人</param>
+        /// <param name="errMsg">错误信息</param>
+        /// <returns>是否成功</returns>
+        public static bool DeleteCompont(int compontID, int deletePersonID, ref string errMsg)
+        {
+            try
+            {
+                using (Model1 model = new Model1())
+                {
+                    var tasks = model.JDJS_PDMS_CompontInfo_Table.Where(r => r.ParentID == compontID && r.state == "正常");
+                    var partTasks = model.JDJS_PDMS_TaskInfo_Table.Where(r => r.ComponentID == compontID && r.state == "正常");
+                    if (tasks.Count() > 0 || partTasks.Count() > 0)
+                    {
+                        errMsg = "该节点下还有其它节点或零件未删除，请先删除子节点后再试！";
+                        return false;
+                    }
+                    var task = model.JDJS_PDMS_CompontInfo_Table.Where(r => r.ID == compontID).FirstOrDefault();
+                    if(task==null)
+                    {
+                        errMsg = "该节点不存在！";
+                        return false;
+                    }
+                    using (System.Data.Entity.DbContextTransaction mytran = model.Database.BeginTransaction())
+                    {
+                        try
+                        {
+                            task.state = "删除";
+                            task.LastAlterPersonID = deletePersonID;
+                            task.LastAlterTime = DateTime.Now;
+                            model.SaveChanges();
+                            mytran.Commit();
+                            errMsg = "ok";
+                            return true;
+                        }
+                        catch (Exception ex)
+                        {
+                            mytran.Rollback();
+                            errMsg = ex.Message;
+                            return false;
+                        }
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                errMsg = ex.Message ;
+                return false;
+
+            }
+        }
+
+
+        /// <summary>
+        /// 修改组件产品信息
+        /// </summary>
+        /// <param name="compontID">需要修改的组件产品ID</param>
+        /// <param name="parentID">父节点ID</param>
+        /// <param name="alterPersonID">修改人员ID</param>
+        /// <param name="compontName">产品组件名称</param>
+        /// <param name="compontNum">编号</param>
+        /// <param name="planStartTime">计划开始时间</param>
+        /// <param name="planEndTime">计划结束时间</param>
+        /// <param name="errMsg">错误信息</param>
+        /// <returns>是否成功</returns>
+        public static bool AlterCompontInfo(int compontID,int parentID, int alterPersonID, string compontName, string compontNum, DateTime planStartTime, DateTime planEndTime, ref string errMsg)
+        {
+            try
+            {
+                using (Model1 model = new Model1())
+                {
+                    var compont = model.JDJS_PDMS_CompontInfo_Table.Where(r => r.ID == compontID && r.state == "正常").FirstOrDefault();
+                    if (compont == null)
+                    {
+                        errMsg = "该产品组件不存在，请确认后再试！";
+                        return false;
+                    }
+                    if (compont.ParentID != parentID)
+                    {
+                        errMsg = "暂不支持修改父节点";
+                        return false;
+                    }
+                    if (compont.ComponentNum == compontNum)
+                    { //如果编号没有修改则只改其它的就行了
+                        using (System.Data.Entity.DbContextTransaction mytran = model.Database.BeginTransaction())
+                        {
+                            try
+                            {
+                                bool isAlter = false;
+                                if (compont.ComponentName != compontName)
+                                {
+                                    compont.ComponentName = compontName;
+                                    isAlter = true;
+                                }
+                                if (compont.PlanStartTime != planStartTime)
+                                {
+                                    compont.PlanStartTime = planStartTime;
+                                    isAlter = true;
+                                }
+                                if (compont.PlanEndTime != planEndTime)
+                                {
+                                    compont.PlanEndTime = planEndTime;
+                                    isAlter = true;
+                                }
+                                if (isAlter)
+                                {
+                                    compont.LastAlterPersonID = alterPersonID;
+                                    compont.LastAlterTime = DateTime.Now;
+                                }
+                                model.SaveChanges();
+                                mytran.Commit();
+                                return true;
+                            }
+                            catch (Exception ex)
+                            {
+                                mytran.Rollback();
+                                errMsg = ex.Message;
+                                return false;
+                            }
+                        }
+                    
+                    }
+                    else
+                    {
+                        var compontAll = model.JDJS_PDMS_CompontInfo_Table.Where(r => r.ParentID == parentID && r.ComponentNum == compontNum && r.state == "正常");
+                        if (compontAll.Count() > 0)
+                        {
+                            errMsg = "该编号已存在，请重新输入！";
+                            return false;
+                        }
+                        var task = model.JDJS_PDMS_TaskInfo_Table.Where(r => r.ComponentID == parentID && r.TaskNum == compontNum && r.state == "正常");
+                        if (task.Count() > 0)
+                        {
+                            errMsg = "该编号已存在，请重新输入！";
+                            return false;
+                        }
+                        string compontNumOld = compont.ComponentNum;
+                        using (System.Data.Entity.DbContextTransaction mytran = model.Database.BeginTransaction())
+                        {
+                            try
+                            {
+                                compont.ComponentNum = compontNum;
+                                bool isAlter = true;
+                                if (compont.ComponentName != compontName)
+                                {
+                                    compont.ComponentName = compontName;
+                                    isAlter = true;
+                                }
+                                if (compont.PlanStartTime != planStartTime)
+                                {
+                                    compont.PlanStartTime = planStartTime;
+                                    isAlter = true;
+                                }
+                                if (compont.PlanEndTime != planEndTime)
+                                {
+                                    compont.PlanEndTime = planEndTime;
+                                    isAlter = true;
+                                }
+                                if (isAlter)
+                                {
+                                    compont.LastAlterPersonID = alterPersonID;
+                                    compont.LastAlterTime = DateTime.Now;
+                                }
+                                model.SaveChanges();
+                                mytran.Commit();
+
+                            }
+                            catch (Exception ex)
+                            {
+                                mytran.Rollback();
+                                errMsg = ex.Message;
+                                return false;
+                            }
+                        }
+
+                        SupplementaryInformation pathInfo = new SupplementaryInformation();
+                        var pathTask = TaskInfoManage.GetCompontPath (parentID);
+                        var dirPathOld = Path.Combine(pathInfo.upLoadPath(), pathTask,compontNumOld );
+                        var dirPathNew = Path.Combine(pathInfo.upLoadPath(), pathTask,compontNum);
+                        if (Directory.Exists(dirPathOld))
+                        {
+                            DirectoryInfo dir = new DirectoryInfo(dirPathOld);
+                            if (dir.Exists)
+                            {
+                                dir.MoveTo(dirPathNew);
+                            }
+                        }
+
+                        return true;
+                    }
+                }
+            }
+            catch (Exception ex)
+            {
+                errMsg = ex.Message;
+                return false;
+            }
+        }
+    }
+
+    public class CompontInfo
+    {
+        /// <summary>
+        /// 主键ID
+        /// </summary>
+        public int id { get; set; }
+        /// <summary>
+        /// 父节点ID
+        /// </summary>
+        public int componentID { get; set; }
+        /// <summary>
+        /// 预览组别主键ID
+        /// </summary>
+        public List<int> previewCategory { get; set; }
+        /// <summary>
+        /// 预览组别
+        /// </summary>
+        public string previewCategoryStr { get; set; }
+        /// <summary>
+        /// 全部零件数量
+        /// </summary>
+        public int allTaskNum { get; set; }
+        /// <summary>
+        /// 未完成零件数量
+        /// </summary>
+        public int unfinishedNum { get; set; }
+        /// <summary>
+        /// 任务编号
+        /// </summary>
+        public string taskNum { get; set; }
+        /// <summary>
+        /// 任务名称
+        /// </summary>
+        public string taskName { get; set; }
+        /// <summary>
+        /// 责任人名称
+        /// </summary>
+        public string staffName { get; set; }
+        /// <summary>
+        /// 责任人主键ID
+        /// </summary>
+        public int staffID { get; set; }
+        /// <summary>
+        /// 版本号
+        /// </summary>
+        public int version { get; set; }
+        /// <summary>
+        /// 全部任务编号
+        /// </summary>
+        public string allConponentNum { get; set; }
+        /// <summary>
+        /// 计划开始时间
+        /// </summary>
+        public string planStartTimeStr { get; set; }
+        public DateTime planStartTime { get; set; }
+        /// <summary>
+        /// 计划结束时间
+        /// </summary>
+        public string planEndTimeStr { get; set; }
+        public DateTime planEndTime { get; set; }
+        /// <summary>
+        /// 需求时间
+        /// </summary>
+        public string demandTimeStr { get; set; }
+        public DateTime demandTime { get; set; }
+        /// <summary>
+        /// 工艺责任人名称
+        /// </summary>
+        public string craftPersonName { get; set; }
+        public int craftPersonID { get; set; }
+        /// <summary>
+        /// 安排任务时间
+        /// </summary>
+        public string arrangeTaskTimeStr { get; set; }
+        public DateTime arrangeTaskTime { get; set; }
+        /// <summary>
+        /// 接收任务时间
+        /// </summary>
+        public string acceptTaskTimeStr { get; set; }
+        public DateTime acceptTaskTime { get; set; }
+
+        public string planCompletionTimeStr { get; set; }
+        public DateTime planCompletionTime { get; set; }
+        /// <summary>
+        /// 工艺过程卡
+        /// </summary>
+        public string processCardUploadTimeStr { get; set; }
+        public DateTime processCardUploadTime { get; set; }
+        public string processCardUploadPath { get; set; }
+        /// <summary>
+        /// 进程单
+        /// </summary>
+        public string processScheduleUpTimeStr { get; set; }
+        public DateTime processScheduleUpTime { get; set; }
+        public string processScheduleUpPath { get; set; }
+
+        /// <summary>
+        /// 刀具表
+        /// </summary>
+        public DateTime ToolTableFileUploadTime { get; set; }
+        public string ToolTableFileUploadTimeStr { get; set; }
+        public string ToolTableFileUploadPath { get; set; }
+        public int ToolTableFileUploadPersonID { get; set; }
+        public string ToolTableFileUploadPersonName { get; set; }
+
+        /// <summary>
+        /// 工装图纸
+        /// </summary>
+        public DateTime ToolingDrawingsUploadTime { get; set; }
+        public string ToolingDrawingsUploadTimeStr { get; set; }
+        public string ToolingDrawingsUploadPath { get; set; }
+        public int ToolingDrawingsUploadPersonID { get; set; }
+        public string ToolingDrawingsUploadPersonName { get; set; }
+        /// <summary>
+        /// 加工文件
+        /// </summary>
+        public string processFileUploadTimeStr { get; set; }
+        public DateTime processFileUploadTime { get; set; }
+        public string processFileUploadPath { get; set; }
+        public int processFileUploadPersonID { get; set; }
+        public string processFileUploadPersonName { get; set; }
+
+        /// <summary>
+        /// 其它文件
+        /// </summary>
+        public string otherFileTimeStr { get; set; }
+        public DateTime otherFileTime { get; set; }
+        public string otherFilePath { get; set; }
+        /// <summary>
+        /// 完成时间
+        /// </summary>
+        public string completeTimeStr { get; set; }
+        public DateTime completeTime { get; set; }
+        /// <summary>
+        /// 任务状态
+        /// </summary>
+        public string taskStateStr { get; set; }
+        public int taskState { get; set; }
+
+        /// <summary>
+        /// 创建时间
+        /// </summary>
+        public string creatTimeStr { get; set; }
+        public DateTime creatTime { get; set; }
+        /// <summary>
+        /// 创建人员
+        /// </summary>
+        public string creatPersonName { get; set; }
+        public int creatPersonID { get; set; }
+        /// <summary>
+        /// 最终修改时间
+        /// </summary>
+        public string lastAlterTimeStr { get; set; }
+        public DateTime lastAlterTime { get; set; }
+        /// <summary>
+        /// 最终修改人员
+        /// </summary>
+        public string lastAlterPersonName { get; set; }
+        public int lastAlterPersonID { get; set; }
+        /// <summary>
+        /// 该条记录状态
+        /// </summary>
+        public string state { get; set; }
+
+        public bool ispart;
+
+        public List<CompontInfo> children { get; set; }
+    }
+}

@@ -1,0 +1,8 @@
+﻿<?xml version="1.0" encoding="utf-8" ?>
+<root>
+  <upLoadPath>D:\JDJS_PDMS_File\</upLoadPath>
+  <downLoadPath>http://192.168.15.110:9001/</downLoadPath>
+  <DaMaMachName>Gprinter GP-3150TN-enetprint</DaMaMachName>
+  <Webhook>https://qyapi.weixin.qq.com/cgi-bin/webhook/send?key=a06e88c4-19ab-48dd-b990-6ca5501af983</Webhook>
+  <examineWebsite>http://2540sp0298.wicp.vip:34238/</examineWebsite>
+</root>

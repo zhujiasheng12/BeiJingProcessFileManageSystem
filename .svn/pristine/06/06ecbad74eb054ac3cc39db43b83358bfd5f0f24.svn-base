@@ -1,0 +1,106 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+      <Schema Namespace="JDXA_DNC_DB_JSModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2008" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="jdxa_file_info">
+          <Key>
+            <PropertyRef Name="FILE_ID" />
+          </Key>
+          <Property Name="FILE_ID" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="FILE_TYPE" Type="int" Nullable="false" />
+          <Property Name="FILE_NAME" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="FILE_SIZE" Type="numeric" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="FILE_PROPERTY" Type="nvarchar" MaxLength="10" Nullable="false" />
+          <Property Name="FILE_PATH" Type="nvarchar(max)" Nullable="false" />
+          <Property Name="FILE_DIRECTORY_ID" Type="int" Nullable="false" />
+          <Property Name="FILE_NEW_NAME" Type="nvarchar" MaxLength="255" Nullable="false" />
+          <Property Name="FLAG" Type="smallint" Nullable="false" />
+          <Property Name="NOTE" Type="nvarchar" MaxLength="100" />
+          <Property Name="CREATE_USER_ID" Type="int" Nullable="false" />
+          <Property Name="CREATE_TIME" Type="datetime" Nullable="false" />
+          <Property Name="UPDATE_USER_ID" Type="int" />
+          <Property Name="UPDATE_TIME" Type="datetime" />
+        </EntityType>
+        <EntityContainer Name="JDXA_DNC_DB_JSModelStoreContainer">
+          <EntitySet Name="jdxa_file_info" EntityType="Self.jdxa_file_info" Schema="file" store:Type="Tables" />
+        </EntityContainer>
+      </Schema>
+    </edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="JDXA_DNC_DB_JSModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="jdxa_file_info">
+          <Key>
+            <PropertyRef Name="FILE_ID" />
+          </Key>
+          <Property Name="FILE_ID" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="FILE_TYPE" Type="Int32" Nullable="false" />
+          <Property Name="FILE_NAME" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="FILE_SIZE" Type="Decimal" Precision="18" Scale="2" Nullable="false" />
+          <Property Name="FILE_PROPERTY" Type="String" MaxLength="10" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="FILE_PATH" Type="String" MaxLength="Max" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="FILE_DIRECTORY_ID" Type="Int32" Nullable="false" />
+          <Property Name="FILE_NEW_NAME" Type="String" MaxLength="255" FixedLength="false" Unicode="true" Nullable="false" />
+          <Property Name="FLAG" Type="Int16" Nullable="false" />
+          <Property Name="NOTE" Type="String" MaxLength="100" FixedLength="false" Unicode="true" />
+          <Property Name="CREATE_USER_ID" Type="Int32" Nullable="false" />
+          <Property Name="CREATE_TIME" Type="DateTime" Nullable="false" Precision="3" />
+          <Property Name="UPDATE_USER_ID" Type="Int32" />
+          <Property Name="UPDATE_TIME" Type="DateTime" Precision="3" />
+        </EntityType>
+        <EntityContainer Name="JDXA_DNC_DB_JSEntities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="jdxa_file_info" EntityType="Self.jdxa_file_info" />
+        </EntityContainer>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="JDXA_DNC_DB_JSModelStoreContainer" CdmEntityContainer="JDXA_DNC_DB_JSEntities">
+          <EntitySetMapping Name="jdxa_file_info">
+            <EntityTypeMapping TypeName="JDXA_DNC_DB_JSModel.jdxa_file_info">
+              <MappingFragment StoreEntitySet="jdxa_file_info">
+                <ScalarProperty Name="FILE_ID" ColumnName="FILE_ID" />
+                <ScalarProperty Name="FILE_TYPE" ColumnName="FILE_TYPE" />
+                <ScalarProperty Name="FILE_NAME" ColumnName="FILE_NAME" />
+                <ScalarProperty Name="FILE_SIZE" ColumnName="FILE_SIZE" />
+                <ScalarProperty Name="FILE_PROPERTY" ColumnName="FILE_PROPERTY" />
+                <ScalarProperty Name="FILE_PATH" ColumnName="FILE_PATH" />
+                <ScalarProperty Name="FILE_DIRECTORY_ID" ColumnName="FILE_DIRECTORY_ID" />
+                <ScalarProperty Name="FILE_NEW_NAME" ColumnName="FILE_NEW_NAME" />
+                <ScalarProperty Name="FLAG" ColumnName="FLAG" />
+                <ScalarProperty Name="NOTE" ColumnName="NOTE" />
+                <ScalarProperty Name="CREATE_USER_ID" ColumnName="CREATE_USER_ID" />
+                <ScalarProperty Name="CREATE_TIME" ColumnName="CREATE_TIME" />
+                <ScalarProperty Name="UPDATE_USER_ID" ColumnName="UPDATE_USER_ID" />
+                <ScalarProperty Name="UPDATE_TIME" ColumnName="UPDATE_TIME" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="false" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="无" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

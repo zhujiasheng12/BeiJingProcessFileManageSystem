@@ -1,0 +1,46 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.Linq;
+using System.Web;
+
+namespace 北京工艺文件管理MVC.Database
+{
+    /// <summary>
+    /// 任务工序表
+    /// </summary>
+    public class JDJS_PDMS_Compont_ProcessInfo_Table
+    {
+        [Key]
+        public int ID { get; set; }
+        public int? CompontID { get; set; }
+        public int ProcessNum { get; set; }
+        public int ProcessingTypeID { get; set; }
+
+        public DateTime? ToolTableFileUploadTime { get; set; }
+        public string ToolTableFileUploadPath { get; set; }
+        public int? ToolTableFileUploadPersonID { get; set; }
+
+        public DateTime? ToolingDrawingsUploadTime { get; set; }
+        public string ToolingDrawingsUploadPath { get; set; }
+        public int? ToolingDrawingsUploadPersonID { get; set; }
+        public int? ToolingDrawingsUploadIsComplete { get; set; }
+        public DateTime? ToolingDrawingsUploadCompleteTime { get; set; }
+
+        public DateTime? ProcessFileUploadTime { get; set; }
+        public string ProcessFileUploadPath { get; set; }
+        public int? ProcessFileUploadPersonID { get; set; }
+        public int? ProcessFileUploadIsComplete { get; set; }
+        public DateTime? ProcessFileUploadCompleteTime { get; set; }
+
+        public DateTime? OtherFileTime { get; set; }
+        public string OtherFilePath { get; set; }
+        public int? OtherFileUploadPersonID { get; set; }
+
+        public DateTime? CreatTime { get; set; }
+        public int? CreatPersonID { get; set; }
+        public DateTime? LastAlterTime { get; set; }
+        public int? LastAlterPersonID { get; set; }
+        public string state { get; set; }
+    }
+}

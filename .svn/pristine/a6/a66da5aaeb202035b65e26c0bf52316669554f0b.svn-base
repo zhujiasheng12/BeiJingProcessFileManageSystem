@@ -1,0 +1,81 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using 北京工艺文件管理MVC.Database;
+
+namespace 北京工艺文件管理MVC.Models
+{
+    public class EmployeeManage
+    {
+        public static bool LonigOn(string userName, string passWord,out string limlt,out string staffName,out int id, ref string errMsg)
+        {
+            try
+            {
+                using (Model1 model = new Model1())
+                {
+                    var staff = model.JDJS_PDMS_Staff_Table.Where(r => r.Users == userName).FirstOrDefault();
+                    if (staff == null)
+                    {
+                        errMsg = "该用户名不存在！";
+                        limlt = "";
+                        staffName = "";
+                        id = 0;
+                        return false;
+                    }
+                    if (staff.PassWord != passWord)
+                    {
+                        errMsg = "用户名或密码错误，请确认后再试！";
+                        limlt = "";
+                        staffName = "";
+                        id = 0;
+                        return false;
+                    }
+                    List<int> limitIDs = new List<int>();
+                    var limltPosition = model.JDJS_PDMS_Position_Authority_Table.Where(r => r.PositionID == staff.PosiationID&&r.state =="正常");
+                    foreach (var item in limltPosition)
+                    {
+                        if (!limitIDs.Contains(Convert.ToInt32(item.AuthorityID)))
+                        {
+                            limitIDs.Add(Convert.ToInt32(item.AuthorityID));
+                        }
+                    }
+                    var limltStaff = model.JDJS_PDMS_Staff_Authority_Tabl.Where(r => r.StaffID == staff.ID && r.state == "正常");
+                    foreach (var item in limltStaff)
+                    {
+                        if (!limitIDs.Contains(Convert.ToInt32(item.AuthorityID)))
+                        {
+                            limitIDs.Add(Convert.ToInt32(item.AuthorityID));
+                        }
+                    }
+                    string limitStr = "";
+                    foreach (var item in model.JDJS_PDMS_Limits_Of_Authority_Table.ToList ())
+                    {
+                        if (!limitIDs.Contains(item.ID))
+                        {
+                            limitStr += item.AuthorityName + ",";
+                        }
+                    }
+                    
+                    errMsg = "ok";
+                    limlt = limitStr;
+                    staffName = staff.StaffName ;
+                    id = staff.ID;
+                    return true;
+                }
+            }
+            catch (Exception ex)
+            {
+                errMsg = ex.Message;
+                limlt = "";
+                staffName = "";
+                id = 0;
+                return false;
+            }
+        }
+    }
+    public class EmployeeInfo
+    { 
+    
+    }
+}

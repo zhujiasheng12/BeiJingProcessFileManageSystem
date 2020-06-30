@@ -1,0 +1,39 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Basic TreeGrid - jQuery EasyUI Demo</title>
+  <link href="/Resources/js/easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="/Resources/js/easyui/themes/icon.css" rel="stylesheet" />
+    <link href="/Resources/js/easyui/demo/demo.css" rel="stylesheet" />
+    <script src="/Resources/js/easyui/jquery.min.js"></script>
+    <script src="/Resources/js/easyui/jquery.easyui.min.js"></script>
+    
+   <link href="/Resources/js/layui-v2.5.4/layui/css/layui.css" rel="stylesheet" />
+    <script src="/Resources/js/layui-v2.5.4/layui/layui.js"></script>
+</head>
+<body>
+    <h2>Basic TreeGrid</h2>
+    <p>TreeGrid allows you to expand or collapse group rows.</p>
+    <div style="margin:20px 0;"></div>
+    <table title="Folder Browser" class="easyui-treegrid" style="width:700px;height:250px"
+           data-options="
+				url: '../工厂管理/PositionHandler.ashx',
+				method: 'get',
+				rownumbers: true,
+				idField: 'id',
+				treeField: 'name',
+                animate:true
+			">
+        <thead>
+            <tr>
+                <th data-options="field:'name'" width="220">Name</th>
+                <th data-options="field:'size'" width="100" align="right">Size</th>
+                <th data-options="field:'date'" width="150">Modified Date</th>
+            </tr>
+        </thead>
+    </table>
+
+ 
+</body>
+</html>

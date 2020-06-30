@@ -1,0 +1,73 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using 北京工艺文件管理MVC.Models;
+
+namespace 北京工艺文件管理MVC.Controllers
+{
+    public class TaskController : Controller
+    {
+        //
+        // GET: /Task/
+
+        public ActionResult Index()
+        {
+            return View();
+        }
+
+        public ActionResult GetTaskInfo()
+        {
+
+            return Json(CompontInfoManage.GetTaskInfo(0, ""), JsonRequestBehavior.AllowGet);
+        }
+
+        public ActionResult AddCompont()
+        {
+            try
+            {
+                string parentId = Request["parentId"];//父节点主键ID
+                string compontName = Request["compontName"];//节点名称
+                string compontNum = Request["compontNum"];//节点编号
+                string planStartTimeStr = Request["planStartTime"];//计划开始时间
+                string planEndTimeStr = Request["planEndTime"];//计划结束时间
+                int creatPersonID = -1;
+                int parent = -1;
+                DateTime planStartTime = DateTime.Now;
+                DateTime planEndTime = DateTime.Now;
+                if (DateTime.TryParse(planStartTimeStr, out planStartTime) && DateTime.TryParse(planEndTimeStr, out planEndTime))
+                {
+                    if (int.TryParse(Session["id"].ToString(), out creatPersonID) && int.TryParse(parentId, out parent))
+                    {
+                        string errMsg = "";
+                        if (CompontInfoManage.AddCompont(parent, compontName, compontNum, creatPersonID, planStartTime, planEndTime, ref errMsg))
+                        {
+                            return Content("ok");
+                        }
+                        else
+                        {
+                            return Content(errMsg);
+                        }
+                    }
+                    else
+                    {
+                        return Content("请输入正确的int类型！");
+                    }
+                }
+                else
+                {
+                    return Content("请输入正确的DateTime类型！");
+                }
+            }
+            catch (Exception ex)
+            {
+                return Content(ex.Message);
+            }
+
+
+
+        }
+
+    }
+}

@@ -1,0 +1,52 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using 北京工艺文件管理MVC.Models;
+
+namespace 北京工艺文件管理MVC.Controllers
+{
+    public class EmmployeeController : Controller
+    {
+        //
+        // GET: /Emmployee/
+
+        public ActionResult Index()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult LonOn()
+        {
+            var userName = Request["userName"];
+            var passWord = Request["passWord"];
+            string errMsg="";
+            string limlt = ""; ;
+            string staffName = "";
+            int id = 0;
+            if (EmployeeManage.LonigOn(userName, passWord, out limlt,out staffName ,out id,ref errMsg))
+            {
+                Session["name"] = staffName ;
+                Session["id"] = id;
+                Session["limit"] = limlt;
+            }
+            return Content(errMsg);
+
+        }
+
+        [HttpGet]
+        public ActionResult Check()
+        {
+            try
+            {
+                return Json(new { name = Session["name"] == null ? "" : Session["name"] ,id=Session["id"]==null?"":Session["id"],limlt =Session["limlt"]==null?"":Session["limlt"]}, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+
+    }
+}

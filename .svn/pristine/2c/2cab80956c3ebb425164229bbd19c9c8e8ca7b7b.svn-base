@@ -1,0 +1,204 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <link href="/Resources/js/layui-v2.5.4/layui/css/layui.css" rel="stylesheet" />
+    <script src="/Resources/js/layui-v2.5.4/layui/layui.js"></script>
+    <script src="/Resources/js/jquery-3.3.1.js"></script>
+</head>
+<body style="padding:10px">
+   <script type="text/html" id="toolbarDemo1">
+        <div style="display:none">
+            <input id="file" onchange="upload()" type="file" multiple="multiple" />
+        </div>
+        <div class="layui-btn-container" >
+            
+            <button class="layui-btn layui-btn-sm" lay-event="upload" style=""><i class="layui-icon layui-icon-upload-circle"></i>上传</button>
+
+        </div>
+    </script>
+            <table id="table1" lay-filter="filter1"></table>
+
+    <script>
+      
+        function fun(id1, allId,show1) {
+       id=id1
+     
+            layui.use('table', function () {
+                var table = layui.table;
+
+                //第一个实例
+                table1 = table.render({
+                    elem: '#table1'
+                     , toolbar: '#toolbarDemo1' //开启头部工具栏，并为其绑定左侧模板
+                     , url: '/CraftDesign/ReadTaskCraftFile'
+                       , method: 'post',
+                       where: { taskId: id,flag:'工艺进程单' }
+                    // , page: true
+                    //, height: height
+                   , defaultToolbar: []
+                     , cols: [[ //表头
+                        //{ type: 'checkbox', fixed: 'left' },
+                        { field: 'fileName', title: '文件名', },
+                          { field: 'updateTimeStr', title: '上传时间', },
+                          {
+                              fixed: 'right', title: '操作', templet: function (d) {
+                                  var html = ' <a href="/' + d.downloadPath + '" download="' + d.fileName + '"> <button class="layui-btn layui-btn-xs" ><i class="layui-icon layui-icon-download-circle"></i>下载</button></a>' +
+                                 '<button style="margin-left:10px" class="layui-btn layui-btn-xs layui-btn-danger" onclick="DeleteTaskCraftFile(`' + d.fileName + '`)"><i class="layui-icon layui-icon-delete"></i>删除</button>'
+                                  return html;
+                              }
+                          }
+
+                     ]], done: function () {
+                         $(".layui-table-tool-temp").css('padding-right', 0)
+                         //if (!bool) {
+                         //    $('.layui-table-tool').remove()
+                         //    $('.layui-btn-danger').remove()
+                         //}
+                         if (!show1) {
+                             $('.layui-table-tool').remove()
+                             $('.layui-btn-danger').remove()
+                         }
+                     }
+                });
+                table.on('toolbar(filter1)', function (obj) {
+                    var checkStatus = table.checkStatus(obj.config.id);
+                    var data = checkStatus.data;
+                    switch (obj.event) {
+                        case 'upload':
+                            $("#file").click()
+                            //if ($("#file").val() == "") {
+                            //    layer.alert("请选择文件")
+                            //    return;
+                            //}
+
+                            break;
+
+                    
+      
+                    };
+                });
+            });
+        }
+     
+        function upload() {
+            debugger
+            //layer.confirm("是否上传", function () {
+            var files = document.getElementById("file").files;
+            var formData = new FormData();
+            for (var i = 0; i < files.length; i++) {
+                formData.append("file" + i, files[i]);
+            }
+            formData.append("taskId", id);
+            formData.append("flag", "工艺进程单")
+            $.ajax({
+                url: "/CraftDesign/SaveTaskCraftFile",
+                type: 'post',
+                processData: false,
+                contentType: false,
+                data: formData,
+                success: function (res) {
+                    if (res == "ok") {
+                        layer.msg("上传成功", { icon: 1, time: 1000 }, function () {
+                            table1.reload()
+                            parent.tgreload()
+                        })
+                    } else if (res = "已经存在") {
+                        //询问框
+
+                        layer.confirm('是否升级？', {
+                            btn: ['是', '否'] //按钮
+                        }, function () {
+                            formData.append('saveFlag', '1')
+                            $.ajax({
+                                url: "/CraftDesign/SaveTaskCraftFileExict",
+                                type: 'post',
+                                processData: false,
+                                contentType: false,
+                                data: formData,
+                                success: function (res) {
+                                    if (res == "ok") {
+                                        layer.msg("上传成功", { icon: 1, time: 1000 }, function () {
+                                            table1.reload()
+                                            parent.tgreload()
+                                        })
+                                    } else { layer.alert(res) }
+                                }
+
+                            })
+                        }, function () {
+                            formData.append('saveFlag', '0')
+                            $.ajax({
+                                url: "/CraftDesign/SaveTaskCraftFileExict",
+                                type: 'post',
+                                processData: false,
+                                contentType: false,
+                                data: formData,
+                                success: function (res) {
+                                    if (res == "ok") {
+                                        layer.msg("上传成功", { icon: 1, time: 1000 }, function () {
+                                            table1.reload()
+                                            parent.tgreload()
+                                        })
+                                    } else {
+                                        layer.alert(res)
+                                    }
+                                }
+
+                            })
+                        });
+                    }
+
+
+                    else { layer.alert(res) }
+                }
+
+            })
+            //})
+        }
+        function del(processId) {
+            layer.confirm("是否删除", function () {
+
+
+
+
+                $.ajax({
+                    url: '/CraftDesign/DeletePartsProcessMethod',
+                    type: 'post',
+                    data: { processId: processId },
+                    success: function (res) {
+                        if (res == 'ok') {
+                            layer.msg("删除成功", { icon: 1, time: 1000 }, function () {
+                                table2.reload()
+                                parent.tgreload()
+                            })
+                        } else {
+                            layer.alert(res)
+                        }
+                    }
+                })
+            })
+        }
+        function DeleteTaskCraftFile(fileNames) {
+            layer.confirm("是否删除", function () {
+                $.ajax({
+                    url: '/CraftDesign/DeleteTaskCraftFile',
+                    type: 'post',
+                    data: { taskId: id, fileNames: fileNames, flag: "工艺进程单" },
+                    success: function (res) {
+                        if (res == 'ok') {
+                            layer.msg("删除成功", { icon: 1, time: 1000 }, function () {
+                                table1.reload()
+                                parent.tgreload()
+                            })
+                        } else {
+                            layer.alert(res)
+                        }
+                    }
+                })
+            })
+        }
+    </script>
+</body>
+</html>

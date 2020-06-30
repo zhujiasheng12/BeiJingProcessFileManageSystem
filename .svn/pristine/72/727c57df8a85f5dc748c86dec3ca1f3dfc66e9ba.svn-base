@@ -1,0 +1,415 @@
+﻿<!DOCTYPE html>
+<html style="height:100%">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><!--//renderer-->
+    <meta name="viewport" content="width=1600,initial-scale=0.5">
+    <title>工艺文件管理系统</title>
+          <link rel="shortcut icon" href="/Resources/icon/logo.ico" />
+    <link rel="shortcut icon" href="/Resources/icon/logo.ico" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+    <link href="/Resources/js/layui-v2.5.4/layui/css/layui.css" rel="stylesheet" />
+    <script src="/Resources/js/layui-v2.5.4/layui/layui.js"></script>
+    <script src="https://cdn.staticfile.org/jquery/1.7/jquery.min.js"></script>
+ 
+    <script>
+     
+        layui.use(['element', 'jquery', 'layer'], function () {
+            var $ = layui.jquery, layer = layui.layer, element = layui.element;
+            $('a[title="侧边伸缩"]').toggle(function () {
+                $('.layui-side').css('width', 0);
+                $('.layui-body').css('left', 0);
+                $(this).find('i').removeClass('layui-icon-shrink-right').addClass('layui-icon-spread-left')
+                return false;
+            }, function () {
+                $('.layui-side').css('width', '200px');
+                $('.layui-body').css('left', '200px');
+                $(this).find('i').removeClass('layui-icon-spread-left').addClass('layui-icon-shrink-right')
+                return false;
+            });
+            $('a[title="刷新"]').click(function () {
+                location.reload()
+            })
+
+            //$("#quit").click(function () {
+            //    location.href = '/Home/Login'
+            //})
+            $("#password").click(function () {
+                layer.open({
+                    area: ['30%', '50%'],
+                    type: 2,
+                    content: '/View/人员管理/修改密码.html',
+                    success: function (layero, index) {
+                        var body = layer.getChildFrame('body', index);
+                        var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                        iframeWin.method($('#id').val());
+
+                    }
+                });
+
+            })
+
+
+
+
+        });
+    </script>
+   <!--机床-->
+    <script>
+        $(function () {
+            layui.use(['element', 'jquery'], function () {
+                var $ = layui.jquery
+                    , element = layui.element;
+
+                //机床创建
+                $('#jcgl').click(function () {
+                    if ($(".layui-tab-title li[lay-id='jcgl']").length > 0) {
+
+                        element.tabChange('demo', 'jcgl');
+                    } else {
+                        element.tabAdd('demo', {
+                            title: '机床创建'
+                            , content: "<iframe src='/View/设备管理/机床创建/机床管理.html', width='100%', height='100%', frameborder='0'></iframe>"
+                            , id: 'jcgl'
+                        })
+                        element.tabChange('demo', 'jcgl');
+                        $('.layui-tab-item').css('height', '100%')
+                    }
+                });
+                //机床型号
+                $('#jcxh').click(function () {
+                    if ($(".layui-tab-title li[lay-id='jcxh']").length > 0) {
+                        element.tabChange('demo', 'jcxh');
+                    } else {
+                        element.tabAdd('demo', {
+                            title: '机床型号'
+                            , content: "<iframe src='/View/设备管理/机床型号.html', width='100%', height='100%', frameborder='0'></iframe>"
+                            , id: 'jcxh'
+                        })
+                        element.tabChange('demo', 'jcxh');
+                        $('.layui-tab-item').css('height', '100%')
+                    }
+                });
+                //机床品牌
+                $('#jcpp').click(function () {
+                    if ($(".layui-tab-title li[lay-id='jcpp']").length > 0) {
+                        element.tabChange('demo', 'jcpp');
+                    } else {
+                        element.tabAdd('demo', {
+                            title: '机床品牌'
+                            , content: "<iframe src='/View/设备管理/机床品牌.html', width='100%', height='100%', frameborder='0'></iframe>"
+                            , id: 'jcpp'
+                        })
+                        element.tabChange('demo', 'jcpp');
+                        $('.layui-tab-item').css('height', '100%')
+                    }
+                });
+                //机床车间
+                $('#wzgl').click(function () {
+                    if ($(".layui-tab-title li[lay-id='wzgl']").length > 0) {
+                        //已经存在
+                        element.tabChange('demo', 'wzgl');
+                    } else {
+                        element.tabAdd('demo', {
+                            title: '机床位置'
+                            , content: "<iframe src='/View/工厂管理/位置管理.html', width='100%', height='100%', frameborder='0'></iframe>"
+                            , id: 'wzgl'
+                        })
+                        element.tabChange('demo', 'wzgl');
+                        $('.layui-tab-item').css('height', '100%')
+                    }
+                });
+
+                //机床布局图
+                $('#cncLayout').click(function () {
+                    if ($(".layui-tab-title li[lay-id='cncLayout']").length > 0) {
+                        //已经存在
+                        element.tabChange('demo', 'cncLayout');
+                    } else {
+                        element.tabAdd('demo', {
+                            title: '机床布局图'
+                            , content: "<iframe src='/View/工厂管理/设计布局图/设计机床布局图.html', width='100%', height='100%', frameborder='0'></iframe>"
+                            , id: 'cncLayout'
+                        })
+                        element.tabChange('demo', 'cncLayout');
+                        $('.layui-tab-item').css('height', '100%')
+                    }
+                });//
+
+
+
+                $('#NCupload').click(function () {
+                    if ($(".layui-tab-title li[lay-id='NCupload']").length > 0) {
+                        //已经存在
+                        element.tabChange('demo', 'NCupload');
+                    } else {
+                        element.tabAdd('demo', {
+                            title: 'NC下发机床'
+                            , content: "<iframe src='NC下发机床/NC下发机床.html', width='100%', height='100%', frameborder='0'></iframe>"
+                            , id: 'NCupload'
+                        })
+                        element.tabChange('demo', 'NCupload');
+                        $('.layui-tab-item').css('height', '100%')
+                    }
+                });//NCupload
+
+            })//
+
+
+
+        })
+    </script>
+    <!--人员-->
+    <script>
+        $(function () {
+            layui.use(['element', 'jquery'], function () {
+                var $ = layui.jquery
+                    , element = layui.element;
+                $('#staff').click(function () {
+
+                    if ($(".layui-tab-title li[lay-id='staff']").length > 0) {
+                        //已经存在
+                        element.tabChange('demo', 'staff');
+                    } else {
+                        element.tabAdd('demo', {
+                            title: '人员管理'
+                            , content: "<iframe src='/View/人员管理/人员管理.html', width='100%', height='100%', frameborder='0'></iframe>"
+                            , id: 'staff'
+                        })
+                        element.tabChange('demo', 'staff');
+                    }
+
+                    $('.layui-tab-item').css('height', '100%')
+                });
+
+
+                $('#admin').click(function () {
+
+                    if ($(".layui-tab-title li[lay-id='admin']").length > 0) {
+                        //已经存在
+                        element.tabChange('demo', 'admin');
+                    } else {
+                        element.tabAdd('demo', {
+                            title: '任务创建'
+                            , content: "<iframe src='/Home/任务创建', width='100%', height='100%', frameborder='0'></iframe>"
+                            , id: 'admin'
+                        })
+                        element.tabChange('demo', 'admin');
+                    }
+
+                    $('.layui-tab-item').css('height', '100%')
+                });
+
+                $('#rwjd').click(function () {
+
+                    if ($(".layui-tab-title li[lay-id='rwjd']").length > 0) {
+                        //已经存在
+                        element.tabChange('demo', 'rwjd');
+                    } else {
+                        element.tabAdd('demo', {
+                            title: '任务进度'
+                            , content: "<iframe src='/Home/任务进度', width='100%', height='100%', frameborder='0'></iframe>"
+                            , id: 'rwjd'
+                        })
+                        element.tabChange('demo', 'rwjd');
+                    }
+
+                    $('.layui-tab-item').css('height', '100%')
+                });
+
+                $('#rwyl').click(function () {
+
+                    if ($(".layui-tab-title li[lay-id='rwyl']").length > 0) {
+                        //已经存在
+                        element.tabChange('demo', 'rwyl');
+                    } else {
+                        element.tabAdd('demo', {
+                            title: '任务预览'
+                            , content: "<iframe src='/Home/任务预览', width='100%', height='100%', frameborder='0'></iframe>"
+                            , id: 'rwyl'
+                        })
+                        element.tabChange('demo', 'rwyl');
+                    }
+
+                    $('.layui-tab-item').css('height', '100%')
+                });
+                $('#user').click(function () {
+
+                    if ($(".layui-tab-title li[lay-id='user']").length > 0) {
+                        //已经存在
+                        element.tabChange('demo', 'user');
+                    } else {
+                        element.tabAdd('demo', {
+                            title: '工艺设计'
+                            , content: "<iframe src='/View/工艺文件管理/staff.html', width='100%', height='100%', frameborder='0'></iframe>"
+                            , id: 'user'
+                        })
+                        element.tabChange('demo', 'user');
+                    }
+
+                    $('.layui-tab-item').css('height', '100%')
+                });
+
+                $("#production").click(function () {
+                    layer.alert("功能开发中")
+                })
+            })
+
+
+        })
+
+
+        $.ajax({
+            url: '/Emmployee/Check',
+           // async: false,
+            success: function (obj) {
+
+                var limit = obj.limlt.split(',');
+                $("#id").val(obj.id)
+                if (obj.name == null | obj.name == "") {
+                  location.href = '/Home/Login'
+                }
+                else {
+                  
+
+                   
+                    $('#userName')[0].childNodes[2].data = obj.name  
+                 
+                    for (var i = 0; i < limit.length; i++) {
+                        $('[limit="' + limit[i] + '"]').remove()
+                    }
+
+
+                }
+
+            }
+        })
+        setTimeout(function () { $($('[click]')[0]).click() }, 100)
+    </script>
+   
+    
+</head>
+
+<body class="layui-layout-body" style="height:100%">
+    
+
+    <div class="layui-layout layui-layout-admin">
+        <div class="layui-header">
+            <div class="layui-logo">工艺文件管理系统</div>
+            <!-- 头部区域（可配合layui已有的水平导航） -->
+            <ul class="layui-nav layui-layout-left" style="left:180px">
+                <li class="layui-nav-item layadmin-flexible" lay-unselect="">
+                    <a title="侧边伸缩" href="javascript:;">
+                        <i class="layui-icon layui-icon-shrink-right" id="LAY_app_flexible" style="font-size: 110%; "> </i>
+                    </a>
+                </li>
+                <li class="layui-nav-item" lay-unselect="">
+                    <a title="刷新" href="javascript:;" layadmin-event="refresh">
+                        <i class="layui-icon layui-icon-refresh-3" style="font-size: 110%; "></i>
+                    </a>
+                </li>
+               
+                <!-- <li class="layui-nav-item layui-hide-xs" lay-unselect>
+      <input type="text" placeholder="搜索..." autocomplete="off" class="layui-input layui-input-search" layadmin-event="serach"
+        lay-action="template/search/keywords=">
+    </li> -->
+             @*   <span id="username" class="layui-nav-bar" style="left: 38px; top: 48px; width: 0px; opacity: 0;">
+
+                </span>*@
+            </ul>
+            <ul class="layui-nav layui-layout-right">
+                <li class="layui-nav-item">
+                    <a id="userName" href="javascript:;">
+                        <img src="/Resources/picture/jd.png" class="layui-nav-img">
+
+                        JD
+
+                    </a>
+                    <dl class="layui-nav-child">
+                        <dd id="password"><a href="javascript:">修改密码</a></dd>
+                    </dl>
+                </li>
+                <li id="quit" class="layui-nav-item"><a href="/Home/Login"><i class="layui-icon layui-icon-close-fill"></i>退出登录</a></li>
+                <li id="help" onclick="help()" class="layui-nav-item"><a href="javascript:"  onclick="help()"><i class="layui-icon layui-icon-survey"></i>帮助</a></li>
+
+
+            </ul>
+            <input id="id" hidden />
+        </div>
+        <div class="layui-side layui-bg-black">
+            <div class="layui-side-scroll">
+                <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+
+
+
+
+                <ul class="layui-nav layui-nav-tree" lay-filter="test">
+
+                 <li class="layui-nav-item " limit="工艺" >
+                        <a id=" " class="" href="javascript:;"><i class="layui-icon layui-icon-survey"></i>工艺</a>
+                     <dl class="layui-nav-child">
+                            <dd id="admin" limit="任务创建"click><a href="javascript:;" style="padding-left:50px" >任务创建</a></dd>
+                          <dd id="rwjd" limit="任务进度"click><a href="javascript:;" style="padding-left:50px" >任务进度</a></dd>
+                            <dd id="user" limit="工艺设计"click><a href="javascript:;" style="padding-left:50px">工艺设计</a></dd>
+                              <dd id="rwyl" limit="任务预览"click><a href="javascript:;" style="padding-left:50px" >任务预览</a></dd>
+                        </dl>
+                    </li>
+                     <li class="layui-nav-item layui-nav-itemed" limit="生产">
+                        <a id="production" class="" href="javascript:;"><i class="layui-icon layui-icon-chart"></i>生产</a>
+
+                    </li>
+                    <li class="layui-nav-item " limit="机床管理">
+
+                        <a class="" href="javascript:;"><i class="layui-icon layui-icon-component"></i>机床</a>
+
+                        <dl class="layui-nav-child">
+                            <dd id="jcgl" limit="机床创建"><a href="javascript:;" style="padding-left:50px" >机床创建</a></dd>
+                            <dd id="jcxh" limit="机床型号"><a href="javascript:;" style="padding-left:50px">机床型号</a></dd>
+                            <dd id="jcpp" limit="机床品牌"><a href="javascript:;" style="padding-left:50px">机床品牌</a></dd>
+                            <dd id="wzgl" limit="机床车间"><a href="javascript:;" style="padding-left:50px">机床车间</a></dd>
+                           <!-- <dd id="cncLayout" limit="机床布局图"><a href="javascript:;" style="padding-left:50px">机床布局图</a></dd>
+                            <dd id="NCupload" limit="NC下发机床"><a href="javascript:;" style="padding-left:50px">NC下发机床</a></dd>-->
+                        </dl>
+                      
+                    </li>
+                    <li class="layui-nav-item layui-nav-itemed" limit="人员管理">
+                        <a id="staff" class="" href="javascript:;" click><i class="layui-icon layui-icon-user"></i>人员</a>
+
+                    </li>
+
+                   
+
+                </ul>
+            </div>
+        </div>
+        <div class="layui-body" style="bottom:0">
+            <!-- 内容主体区域 -->
+
+
+            <div class="layui-tab layui-tab-brief" lay-filter="demo" lay-allowClose="true" style="width:100%;height:100%">
+                <ul class="layui-tab-title">
+                   <!-- <li class="layui-this" lay-id='admin'>管理员</li>-->
+                </ul>
+                <div class="layui-tab-content" style="padding:0;height:100%">
+                  <!--  <div class="layui-tab-item layui-show"><iframe src='/View/工艺文件管理/admin.html' width='100%' height='800' , frameborder='0'></iframe> </div>-->
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <script>
+        function help() {
+            window.open('/Resources/js/echarts.js')
+            //var dd = $('li.layui-this')
+            //var text = dd[1].firstChild.textContent
+            //if (text == "意向订单"|text == "生产订单"|text == "订单进度") {
+            //    window.open('资料/WMS生产管理操作说明——市场部.pdf')
+            //}
+            // if (text == "订单评估"|text == "工程安排"|text == "工程师") {
+            //    window.open('资料/WMS生产管理操作说明——工程部.pdf')
+            //}
+
+
+        }
+    </script>
+</body>
+</html>

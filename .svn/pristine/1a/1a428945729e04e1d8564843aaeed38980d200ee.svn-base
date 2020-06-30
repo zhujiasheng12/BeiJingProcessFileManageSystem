@@ -1,0 +1,28 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using 北京工艺文件管理MVC.Models;
+
+namespace 北京工艺文件管理MVC.Controllers
+{
+    public class TaskController : Controller
+    {
+        //
+        // GET: /Task/
+
+        public ActionResult Index()
+        {
+            return View();
+        }
+
+        public ActionResult GetTaskInfo()
+        {
+            CompontInfoManage.GetTaskInfo(0, "");
+
+            return Json(CompontInfoManage.GetTaskInfo(0, ""));
+        }
+
+    }
+}

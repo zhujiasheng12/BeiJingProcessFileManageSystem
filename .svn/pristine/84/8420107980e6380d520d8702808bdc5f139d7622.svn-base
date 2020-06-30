@@ -1,0 +1,144 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using 北京工艺文件管理MVC.Models;
+
+namespace 北京工艺文件管理MVC.Controllers
+{
+    public class TaskController : Controller
+    {
+        //
+        // GET: /Task/
+
+        public ActionResult Index()
+        {
+            return View();
+        }
+        /// <summary>
+        /// 获取所有任务信息
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetTaskInfo()
+        {
+
+            return Json(CompontInfoManage.GetTaskInfo(0, ""), JsonRequestBehavior.AllowGet);
+        }
+        /// <summary>
+        /// 添加产品组件
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult AddCompont()
+        {
+            try
+            {
+                string parentId = Request["parentId"];//父节点主键ID
+                string compontName = Request["compontName"];//节点名称
+                string compontNum = Request["compontNum"];//节点编号
+                string planStartTimeStr = Request["planStartTime"];//计划开始时间
+                string planEndTimeStr = Request["planEndTime"];//计划结束时间
+                int creatPersonID = -1;
+                int parent = -1;
+                DateTime planStartTime = DateTime.Now;
+                DateTime planEndTime = DateTime.Now;
+                if (DateTime.TryParse(planStartTimeStr, out planStartTime) && DateTime.TryParse(planEndTimeStr, out planEndTime))
+                {
+                    if (int.TryParse(Session["id"].ToString(), out creatPersonID) && int.TryParse(parentId, out parent))
+                    {
+                        string errMsg = "";
+                        if (CompontInfoManage.AddCompont(parent, compontName, compontNum, creatPersonID, planStartTime, planEndTime, ref errMsg))
+                        {
+                            return Content("ok");
+                        }
+                        else
+                        {
+                            return Content(errMsg);
+                        }
+                    }
+                    else
+                    {
+                        return Content("请输入正确的int类型！");
+                    }
+                }
+                else
+                {
+                    return Content("请输入正确的DateTime类型！");
+                }
+            }
+            catch (Exception ex)
+            {
+                return Content(ex.Message);
+            }
+
+
+
+        }
+
+        /// <summary>
+        /// 添加零件
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult AddTask()
+        {
+            try
+            {
+                string parentId = Request["parentId"];//父节点主键ID
+                string taskName = Request["taskName"];//节点名称
+                string taskNum = Request["taskNum"];//节点编号
+                string planStartTimeStr = Request["planStartTime"];//计划开始时间
+                string planEndTimeStr = Request["planEndTime"];//计划结束时间
+                string craftPersonIdStr = Request["craftPersonId"];//工艺责任人主键ID
+                string previewCategoryStr = Request["previewCategoryStr"];//预览组别
+                List<string> previewCategoryStrList = previewCategoryStr.Split(',').ToList() ;
+                List<int> previewCategoryList = new List<int>();
+                foreach (var item in previewCategoryStrList)
+                {
+                    int _int =-1;
+                    if(int.TryParse (item,out _int ))
+                    {
+                        previewCategoryList.Add(_int);
+                    }
+                }
+                int creatPersonID = -1;
+                int craftPersonId = -1;
+                int parent = -1;
+                DateTime planStartTime = DateTime.Now;
+                DateTime planEndTime = DateTime.Now;
+                if (DateTime.TryParse(planStartTimeStr, out planStartTime) && DateTime.TryParse(planEndTimeStr, out planEndTime))
+                {
+                    if (int.TryParse(Session["id"].ToString(), out creatPersonID) && int.TryParse(parentId, out parent)&&int.TryParse (craftPersonIdStr ,out craftPersonId))
+                    {
+                        string errMsg = "";
+                        if (TaskInfoManage .AddTask (parent ,taskName ,taskNum ,creatPersonID ,planStartTime ,planEndTime ,craftPersonId ,previewCategoryList ,ref errMsg ))
+                        {
+                            return Content("ok");
+                        }
+                        else
+                        {
+                            return Content(errMsg);
+                        }
+                    }
+                    else
+                    {
+                        return Content("请输入正确的int类型！");
+                    }
+                }
+                else
+                {
+                    return Content("请输入正确的DateTime类型！");
+                }
+            }
+            catch (Exception ex)
+            {
+                return Content(ex.Message);
+            }
+
+
+
+        }
+
+    }
+}

@@ -1,0 +1,148 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="utf-8" />
+    <title></title>
+   <link href="/Resources/js/easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="/Resources/js/easyui/themes/icon.css" rel="stylesheet" />
+    <link href="/Resources/js/easyui/demo/demo.css" rel="stylesheet" />
+    <script src="/Resources/js/easyui/jquery.min.js"></script>
+    <script src="/Resources/js/easyui/jquery.easyui.min.js"></script>
+    
+   <link href="/Resources/js/layui-v2.5.4/layui/css/layui.css" rel="stylesheet" />
+    <script src="/Resources/js/layui-v2.5.4/layui/layui.js"></script>
+</head>
+<body>
+     <div style="">
+         <div id="tree" ></div>
+
+    </div>
+    <form class="layui-form" action="">
+       @* <div class="layui-form-item"style="margin-right:15px">
+            <label class="layui-form-label"style="width:100px">父节点<span style="color:red">*</span></label>
+            <div class="layui-input-block">
+                <input type="text" name="father" required lay-verify="required" placeholder="必填项" autocomplete="off" class="layui-input" readonly>
+            </div>
+        </div>*@
+        <div class="layui-form-item"style="margin-right:15px">
+            <label class="layui-form-label"style="width:100px">职位名称<span style="color:red">*</span></label>
+            <div class="layui-input-block">
+                <input type="text" name="positionName" required lay-verify="required" placeholder="必填项" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+        <!--<div class="layui-form-item"style="margin-right:15px">
+            <label class="layui-form-label"style="width:100px">备注</label>
+            <div class="layui-input-block">
+                <input type="text" name="remark" required placeholder="选填项" autocomplete="off" class="layui-input">
+            </div>
+        </div>-->
+        <div class="layui-form-item"style="text-align:center">
+            <div class="layui-input-block"style="margin-left:0">
+                <button class="layui-btn" lay-submit lay-filter="*">立即提交</button>
+
+            </div>
+        </div>
+
+    </form>
+   
+ 
+
+    <script>
+        function fun(positionName1, positionId1) {
+            debugger
+            positionName = positionName1;
+            positionId = positionId1;
+           // alert(positionId)
+            $('[name="positionName"]').val(positionName)
+
+            $('#tree').treegrid({
+                url: '/Emmployee/GetAuthorityByPositionMethod?positionId=' + positionId,
+
+                method: 'post',
+                idField: 'id',
+                treeField: 'authorityName',
+
+                checkbox: true,
+               // animate: true,
+                columns: [[
+                    { title: '勾选权限', field: 'authorityName', width: '100%' },
+                    { title: 'id', field: 'id', width: 180, hidden: true },
+                ]],
+                onLoadSuccess: function () {
+                    $('.tree-icon ').remove()
+                    $('td').css('border', 'none')
+                    $('.panel-body').css('border-color', 'white')
+                    //$('#tree').tree('select', $('#_easyui_tree_2'))
+
+
+                    //$.ajax({
+                    //    url: '/Emmployee/GetAuthorityByPositionMethod',
+                    //    type: 'post',
+                    //    data: { positionId: positionId },
+                    //    success: function (res) {
+                    //        console.log(res)
+                    //    }
+                    //})
+
+                }
+              
+            })
+        }
+
+        layui.use('form', function () {
+            var form = layui.form, layer = layui.layer;
+            form.on('submit(*)', function (data) {
+                var formDate = new FormData();
+
+
+
+
+
+
+                layer.confirm("是否提交", function (index) {
+
+                    var nodes = $('.tree-checkbox1,.tree-checkbox2').parent('div').parent('[field="authorityName"]').siblings('[field="id"]')
+                    var limlt = "";
+                    debugger
+                    if (nodes.length == 0) {
+                      
+                    }
+                    else {
+                        for (var i = 0; i < nodes.length; i++) {
+                            limlt += nodes[i].children[0].innerText + ',';
+                        }
+                    }
+
+                    $.ajax({
+                        url: '/Emmployee/AlterPositionInfoMethod',
+                        type: 'post',
+
+                        data: {
+                            "positionId": positionId,
+                            "positionName": $("[name='positionName']").val(),
+                            limlt:limlt
+                        },
+                        success: function (d) {
+                            if (d == "ok") {
+                                layer.msg("修改成功", {icon:1,time:1000},function(){
+                                    var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                    parent.layer.close(index); //再执行关闭      
+                                    //parent.table1.reload()
+                                })
+                               
+                            }
+                            else {
+                                layer.alert(d)
+                            }
+                        }
+
+                    })
+                    layer.close(index)
+                })
+                return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+            });
+        })
+       
+    </script>
+</body>
+</html>

@@ -1,0 +1,293 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using 北京工艺文件管理MVC.Models;
+
+namespace 北京工艺文件管理MVC.Controllers
+{
+    public class EmmployeeController : Controller
+    {
+        //
+        // GET: /Emmployee/
+
+        public ActionResult Index()
+        {
+            return View();
+        }
+        [HttpPost]
+        public ActionResult LonOn()
+        {
+            var userName = Request["userName"];
+            var passWord = Request["passWord"];
+            string errMsg = "";
+            string limlt = ""; ;
+            string staffName = "";
+            int id = 0;
+            int processTypeId = -1;
+            string processTypeStr = "";
+            if (EmployeeManage.LonigOn(userName, passWord, out limlt, out staffName, out id,out processTypeId ,out processTypeStr , ref errMsg))
+            {
+                Session["name"] = staffName;
+                Session["id"] = id;
+                Session["limit"] = limlt;
+                Session["processTypeId"] = processTypeId;
+                Session["processTypeStr"] = processTypeStr;
+            }
+            return Content(errMsg);
+
+        }
+        /// <summary>
+        /// 检测登录合法
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult Check()
+        {
+            try
+            {
+                return Json(new { name = Session["name"] == null ? "" : Session["name"], id = Session["id"] == null ? "" : Session["id"], limlt = Session["limlt"] == null ? "" : Session["limlt"], processTypeId = Session["processTypeId"] == null ? -1 : Session["processTypeId"], processTypeStr = Session["processTypeStr"] == null ? "" : Session["processTypeStr"] }, JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        /// <summary>
+        /// 获取所有的部门与员工
+        /// </summary>
+        /// <returns></returns>
+        [HttpGet]
+        public ActionResult GetAllStaffAndDepartment()
+        {
+            try
+            {
+                return Json(EmployeeManage.GetAllDepartment(0, ""), JsonRequestBehavior.AllowGet);
+            }
+            catch
+            {
+                return null;
+            }
+        }
+        /// <summary>
+        /// 添加部门
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult AddDepartmentMethod()
+        {
+            try
+            {
+                //int parentID, string departmentName, int creatPersonID, ref string errMsg
+                var parentIDStr = Request["parentID"];///部门父节点ID，没有则为0
+                var departmentName = Request["departmentName"];//部门名称
+                string creatPersonIDsStr = Session["id"] == null ? "" : Session["id"].ToString();
+                int parentID = -1;
+                int createPersonID = -1;
+                if (int.TryParse(parentIDStr, out parentID) && int.TryParse(creatPersonIDsStr, out createPersonID))
+                {
+                    string errMsg = "";
+                    if (EmployeeManage.AddDepartment(parentID, departmentName, createPersonID, ref errMsg))
+                    {
+                        return Content("ok");
+                    }
+                    else
+                    {
+                        return Content(errMsg);
+                    }
+                }
+                else
+                {
+                    return Content("请输入正确的Int类型！");
+                }
+            }
+            catch (Exception ex)
+            {
+                return Content(ex.Message);
+            }
+
+        }
+
+
+        /// <summary>
+        /// 添加职位
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult AddPositionMethod()
+        {
+            try
+            {
+                //int parentID, string positionName, int creatPersonID, List<int> limltList, ref string errMsg
+                var parentIDStr = Request["parentID"];///部门父节点ID
+                var positionName = Request["positionName"];//职位名称
+                var limliStr = Request["limlt"];//该职位的权限ID集合
+
+                List<string> limltListStr = limliStr.Split(',').ToList();
+                List<int> limltList = new List<int>();
+                foreach (var item in limltListStr)
+                {
+                    int _int = -1;
+                    if (int.TryParse(item, out _int))
+                    {
+                        limltList.Add(_int);
+                    }
+                }
+                string creatPersonIDsStr = Session["id"] == null ? "" : Session["id"].ToString();
+                int parentID = -1;
+                int createPersonID = -1;
+                if (int.TryParse(parentIDStr, out parentID) && int.TryParse(creatPersonIDsStr, out createPersonID))
+                {
+                    string errMsg = "";
+                    if (EmployeeManage.AddPosition(parentID, positionName, createPersonID, limltList, ref errMsg))
+                    {
+                        return Content("ok");
+                    }
+                    else
+                    {
+                        return Content(errMsg);
+                    }
+                }
+                else
+                {
+                    return Content("请输入正确的Int类型！");
+                }
+            }
+            catch (Exception ex)
+            {
+                return Content(ex.Message);
+            }
+
+        }
+
+
+        /// <summary>
+        /// 添加员工
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult AddEmployeeMethod()
+        {
+            try
+            {
+
+                var parentIDStr = Request["parentID"];///职位父节点ID
+                var staffName = Request["staffName"];//员工名称
+                var tel = Request["tel"];//员工电话
+                var userName = Request["userName"];//员工登录名
+                var passWord = Request["passWord"];//员工登录密码
+                var mailBox = Request["mailBox"];//员工邮箱
+
+
+
+                string creatPersonIDsStr = Session["id"] == null ? "" : Session["id"].ToString();
+                int parentID = -1;
+                int createPersonID = -1;
+                if (int.TryParse(parentIDStr, out parentID) && int.TryParse(creatPersonIDsStr, out createPersonID))
+                {
+                    string errMsg = "";
+                    if (EmployeeManage.AddEmployee(parentID, staffName, tel, userName, passWord, mailBox, createPersonID, ref errMsg))
+                    {
+                        return Content("ok");
+                    }
+                    else
+                    {
+                        return Content(errMsg);
+                    }
+                }
+                else
+                {
+                    return Content("请输入正确的Int类型！");
+                }
+            }
+            catch (Exception ex)
+            {
+                return Content(ex.Message);
+            }
+
+        }
+        /// <summary>
+        /// 读取某个部门下的职位
+        /// </summary>
+        /// <returns></returns>
+        [HttpPost]
+        public ActionResult GetPositionOfDepartment()
+        {
+            try
+            {
+                var parentIDStr = Request["parentID"];///部门节点ID
+                // GetDepartmentPosition(int parentID  
+                int parentID = -1;
+                if (int.TryParse(parentIDStr, out parentID))
+                {
+                    var list = EmployeeManage.GetDepartmentPosition(parentID);
+                    return Json(list, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Content("请输入正确的部门ID");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return Content(ex.Message);
+            }
+        }
+        /// <summary>
+        /// 获取所有权限
+        /// </summary>
+        /// <returns></returns>
+        //[HttpPost]
+        public ActionResult GetAuthority()
+        {
+            try
+            {
+
+                return Json(EmployeeManage.GetAuthority(0), JsonRequestBehavior.AllowGet);
+
+            }
+            catch (Exception ex)
+            {
+                return Content(ex.Message);
+            }
+        }
+
+        [HttpPost]
+        public ActionResult AddAuthorityMethod()
+        {
+            try
+            {
+                var parentIDStr = Request["parentID"];///权限父节点ID
+                var authorityName = Request["authorityName"];//员工名称
+                string creatPersonIDsStr = Session["id"] == null ? "" : Session["id"].ToString();
+                int parentID = -1;
+                int createPersonID = -1;
+                if (int.TryParse(parentIDStr, out parentID) && int.TryParse(creatPersonIDsStr, out createPersonID))
+                {
+                    string errMsg = "";
+                    if (EmployeeManage.AddAuthority(parentID, authorityName, createPersonID, ref errMsg))
+                    {
+                        return Content("ok");
+                    }
+                    else 
+                    { 
+                        return Content(errMsg); 
+                    }
+
+                }
+                else
+                {
+                    return Content("请输入正确的int类型");
+                }
+
+            }
+            catch (Exception ex)
+            {
+                return Content(ex.Message);
+            }
+        }
+
+    }
+}

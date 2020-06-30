@@ -1,0 +1,147 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <link href="/Resources/js/layui-v2.5.4/layui/css/layui.css" rel="stylesheet" />
+    <script src="/Resources/js/layui-v2.5.4/layui/layui.js"></script>
+    <script src="/Resources/js/jquery-3.3.1.js"></script>
+</head>
+<body style="padding: 10px">
+
+    <table id="table1" lay-filter="filter1"></table>
+
+    <script>
+
+        function fun(id1, ispart1) {//  group1  车  钳 
+            id = id1;
+            ispart = ispart1;
+            layui.use('table', function () {
+                var table = layui.table;
+
+                if (ispart) {
+                    table1 = table.render({
+                        elem: '#table1'
+                   , toolbar: '#toolbarDemo1' //开启头部工具栏，并为其绑定左侧模板
+                   , url: '/CraftDesign/GetPartsProcessInfoByPartTaskAndPerson'
+                     , method: 'post',
+                        where: { taskId: id, }
+                        // , page: true
+                        //, height: height
+                  , defaultToolbar: []
+                   , cols: [[ //表头
+                      //{ type: 'checkbox', fixed: 'left' },
+                     //{ field: 'processNum', title: '工序号', },
+                       { field: 'processingTypeStr', title: '组别', },
+                          {
+                              field: 'toolingDrawingsUploadPersonName', title: '责任人', templet: function (d) {
+                                  if (d.toolingDrawingsUploadPersonName == "") {
+                                      return '<p style="text-decoration: underline;color:blue">无</p>';
+                                  } else {
+                                      return '<p style="text-decoration: underline;color:blue">' + d.toolingDrawingsUploadPersonName + '</p>';
+                                  }
+
+                              }
+                          },
+                       { field: 'toolingDrawingsUploadPersonID', hide: true },
+                        { field: 'id', title: 'id', hide: true }
+
+                   ]], done: function () {
+                       $(".layui-table-tool-temp").css('padding-right', 0)
+
+                       $('td[data-field="toolingDrawingsUploadPersonName"]').click(function () {
+                           var processId = $(this).siblings('td[data-field="id"]').children().text()
+                           // var processingTypeStr = $(this).siblings('td[data-field="processingTypeStr"]').children().text()
+                           var personId = $(this).siblings('td[data-field="toolingDrawingsUploadPersonID"]').children().text()
+                           var limit = sessionStorage.getItem('limit');
+                           if (limit.indexOf('工艺安排') > -1) {
+                               layer.alert("无此权限！");
+                               return;
+                           }
+
+                           layer.open({
+                               type: 2,
+                               area: ['300px', '300px'],
+                               content: '/Home/修改工序责任人',
+                               success: function (layero, index) {
+
+                                   var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                                   iframeWin.fun(processId, personId, ispart);
+
+                               }
+                           });
+                       })
+                       //if (!bool) {
+                       //    $('.layui-table-tool').remove()
+                       //    $('.layui-btn-danger').remove()
+                       //}
+                   }
+                    });
+                } else {
+                    table1 = table.render({
+                        elem: '#table1'
+                , toolbar: '#toolbarDemo1' //开启头部工具栏，并为其绑定左侧模板
+                , url: '/CompontCraftDesign/GetPartsProcessInfoByPartTaskAndPerson'
+                  , method: 'post',
+                        where: { taskId: id, }
+                        // , page: true
+                        //, height: height
+               , defaultToolbar: []
+                , cols: [[ //表头
+                   //{ type: 'checkbox', fixed: 'left' },
+                  //{ field: 'processNum', title: '工序号', },
+                    { field: 'processingTypeStr', title: '组别', },
+                       {
+                           field: 'toolingDrawingsUploadPersonName', title: '责任人', templet: function (d) {
+                               if (d.toolingDrawingsUploadPersonName == "") {
+                                   return '<p style="text-decoration: underline;color:blue">无</p>';
+                               } else {
+                                   return '<p style="text-decoration: underline;color:blue">' + d.toolingDrawingsUploadPersonName + '</p>';
+                               }
+
+                           }
+                       },
+                    { field: 'toolingDrawingsUploadPersonID', hide: true },
+                     { field: 'id', title: 'id', hide: true }
+
+                ]], done: function () {
+                    $(".layui-table-tool-temp").css('padding-right', 0)
+
+                    $('td[data-field="toolingDrawingsUploadPersonName"]').click(function () {
+                        var processId = $(this).siblings('td[data-field="id"]').children().text()
+                        // var processingTypeStr = $(this).siblings('td[data-field="processingTypeStr"]').children().text()
+                        var personId = $(this).siblings('td[data-field="toolingDrawingsUploadPersonID"]').children().text()
+                        var limit = sessionStorage.getItem('limit');
+                        if (limit.indexOf('工艺安排') > -1) {
+                            layer.alert("无此权限！");
+                            return;
+                        }
+
+                        layer.open({
+                            type: 2,
+                            area: ['300px', '300px'],
+                            content: '/Home/修改工序责任人',
+                            success: function (layero, index) {
+
+                                var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                                iframeWin.fun(processId, personId,ispart);
+
+                            }
+                        });
+                    })
+                    //if (!bool) {
+                    //    $('.layui-table-tool').remove()
+                    //    $('.layui-btn-danger').remove()
+                    //}
+                }
+                    });
+                }
+
+
+            });
+        }
+
+
+    </script>
+</body>
+</html>

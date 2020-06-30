@@ -1,0 +1,156 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <link href="/Resources/js/easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="/Resources/js/easyui/themes/icon.css" rel="stylesheet" />
+    <link href="/Resources/js/easyui/demo/demo.css" rel="stylesheet" />
+    <script src="/Resources/js/easyui/jquery.min.js"></script>
+    <script src="/Resources/js/easyui/jquery.easyui.min.js"></script>
+
+    <link href="/Resources/js/layui-v2.5.4/layui/css/layui.css" rel="stylesheet" />
+    <script src="/Resources/js/layui-v2.5.4/layui/layui.js"></script>
+</head>
+<body>
+    <form class="layui-form">
+        <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+
+
+        <div class="layui-form-item" style="margin-right:15px">
+            <label class="layui-form-label" style="width:100px">产品型号<span style="color:red">*</span></label>
+            <div class="layui-input-block">
+                <input lay-verify="required" type="text" name="groupNum" placeholder="必填项" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item"style="margin-right:15px">
+            <label class="layui-form-label" style="width:100px">产品名称<span style="color:red">*</span></label>
+            <div class="layui-input-block">
+                <input lay-verify="required" type="text" name="groupName" placeholder="必填项" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+
+
+        <div class="layui-form-item"style="margin-right:15px">
+            <label class="layui-form-label" style="width:100px">零件图号<span style="color:red">*</span></label>
+            <div class="layui-input-block">
+                <input lay-verify="required" type="text" name="TaskNum" placeholder="必填项" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item"style="margin-right:15px">
+            <label class="layui-form-label" style="width:100px">零件名称<span style="color:red">*</span></label>
+            <div class="layui-input-block">
+                <input lay-verify="required" type="text" name="TaskName" placeholder="必填项" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item"style="margin-right:15px">
+            <label class="layui-form-label" style="width:100px">计划时间<span style="color:red">*</span></label>
+            <div class="layui-input-block">
+                <input lay-verify="required" type="text" name="date" id="date" lay-verify="date" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+       
+
+         <div class="layui-form-item"style="margin-right:15px">
+            <label class="layui-form-label" style="width:100px">工艺人员<span style="color:red">*</span></label>
+            <div class="layui-input-block">
+                <input  type="text"  id="craftPersonId"lay-verify="required" name="craftPersonId" placeholder="必填项" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+     <!--   <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-block">
+                <textarea placeholder="选填" class="layui-textarea"></textarea>
+            </div>
+        </div>-->
+        <div class="layui-form-item" style="text-align:center">
+            <div class="layui-input-block" style="margin-left:0">
+                <button class="layui-btn" lay-submit lay-filter="*">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+        <!-- 更多表单结构排版请移步文档左侧【页面元素-表单】一项阅览 -->
+    </form>
+
+
+    <script>
+        function fun(keyId1, groupNum, groupName, TaskNum, TaskName,demandTime1,CraftPersonID1) {
+            keyId = keyId1, CraftPersonID = CraftPersonID1,
+
+      
+
+            $('[name="groupNum"]').val(groupNum);
+            $('[name="groupName"]').val(groupName);
+            $('[name="TaskNum"]').val(TaskNum);
+            $('[name="TaskName"]').val(TaskName);
+
+            $('#craftPersonId').combotreegrid('setValue', { id: CraftPersonID });
+            $('[name="date"]').val(demandTime1.replace('/', '-').replace('/', '-'));
+          
+        }
+            $(function () {
+                $('#craftPersonId').combotreegrid({
+                    value: '',
+                    width: '100%',
+                    panelWidth: 500,
+                    //label: '请选择：',
+                    labelPosition: 'left',
+                    url: '../人员管理/staffRead.ashx',
+                    idField: 'id',
+                    treeField: 'staff',
+                    columns: [[
+                        { field: 'staff', title: '姓名', width: '100%' },
+
+                        { field: 'id', title: 'id', width: 100, hidden: true }
+                    ]],
+                    onLoadSuccess: function () {
+                        $('.tree-icon.tree-file').removeClass('tree-file')
+                        $('.tree-icon.tree-folder').removeClass('tree-folder')
+                       
+                    }
+                });
+            });
+            layui.use(['form','laydate'], function () {
+                var form = layui.form;
+                //执行一个laydate实例
+                layui.laydate.render({
+                    elem: '[name="date"]', //指定元素,
+                    type: 'datetime',
+                 
+                    trigger:'click'
+                });
+                //监听提交
+                form.on('submit(*)', function (data) {
+                    layer.confirm("是否提交", function (index) {
+                        debugger
+                        data.field.taskId = keyId;
+                        debugger
+                        $.ajax({
+                            url: 'adminEdit.ashx',
+                            type: 'post',
+                            data: data.field,
+                            success: function (res) {
+                                if (res == "ok") {
+                                    layer.msg("修改成功", { icon: 1, time: 1000 }, function () {
+                                        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                        parent.layer.close(index); //再执行关闭    
+                                        parent.table1.reload()
+                                    })
+                                } else { layer.alert(res) }
+                            }
+                        })
+                    })
+                    console.log((data.field));
+                    return false;
+                });
+            });
+    </script>
+</body>
+</html>

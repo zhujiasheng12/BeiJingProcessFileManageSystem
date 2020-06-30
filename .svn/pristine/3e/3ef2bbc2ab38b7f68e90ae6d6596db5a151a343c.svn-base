@@ -1,0 +1,141 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using 北京工艺文件管理MVC.Database;
+
+namespace 北京工艺文件管理MVC.Models
+{
+    public class CompontInfoManage
+    {
+        public static List<CompontInfo> GetTaskInfo(int parentID,string orderNum)
+        {
+            try
+            {
+                List<CompontInfo> compontInfos = new List<CompontInfo>();
+                using (Model1 model = new Model1())
+                {
+                    var compont = model.JDJS_PDMS_CompontInfo_Table.Where(r => r.ParentID == parentID&&r.state =="正常");
+                    foreach (var item in compont)
+                    {
+                        CompontInfo compontInfo = new CompontInfo();
+                        compontInfo.componentID = parentID;
+                        compontInfo.taskName = item.ComponentName;
+                        compontInfo.taskNum = item.ComponentNum;
+                        compontInfo.allConponentNum = orderNum + item.ComponentNum + ".";
+                        compontInfo.creatPersonID =Convert.ToInt32 ( item.CreatPersonID);
+                        compontInfo.createPersonName = "";
+                        var staffCreat = model.JDJS_PDMS_Staff_Table.Where(r => r.ID == item.CreatPersonID && r.state == "正常").FirstOrDefault();
+                        if (staffCreat != null)
+                        {
+                            compontInfo.createPersonName = staffCreat.StaffName;
+                        }
+                        compontInfo.staffID = compontInfo.creatPersonID;
+                        compontInfo.staffName = compontInfo.createPersonName;
+                        compontInfo.creatTime = Convert.ToDateTime(item.CreatPersonID);
+                        compontInfo.creatTimeStr = item.CreatTime.ToString().Substring(0, item.CreatTime.ToString().LastIndexOf(':'));
+                        compontInfo.id = item.ID;
+                        compontInfo.lastAlterPersonID =Convert.ToInt32 ( item.LastAlterPersonID);
+                        compontInfo.lastAlterPersonName = "";
+                        var stafflastAlter = model.JDJS_PDMS_Staff_Table.Where(r => r.ID == item.LastAlterPersonID && r.state == "正常").FirstOrDefault();
+                        if (stafflastAlter != null)
+                        {
+                            compontInfo.lastAlterPersonName = stafflastAlter.StaffName;
+                        }
+                        compontInfo.lastAlterTime = Convert.ToDateTime(item.LastAlterTime);
+                        compontInfo.lastAlterTimeStr = item.LastAlterTime.ToString().Substring(0, item.LastAlterTime.ToString().LastIndexOf(':'));
+                        compontInfo.planEndTime = Convert.ToDateTime(item.PlanEndTime);
+                        compontInfo.planEndTimeStr = item.PlanEndTime.ToString().Substring(0, item.PlanEndTime.ToString().LastIndexOf(':'));
+                        compontInfo.planStartTime =Convert .ToDateTime ( item.PlanStartTime);
+                        compontInfo.planStartTimeStr = item.PlanStartTime.ToString().Substring(0, item.PlanStartTime.ToString().LastIndexOf(':'));
+                        compontInfo.taskInfos = TaskInfoManage.GetPartTaskInfo(item.ID, compontInfo.allConponentNum);
+                        compontInfo.listCompontInfos = CompontInfoManage.GetTaskInfo(item.ID, compontInfo.allConponentNum);
+                        compontInfo.demandTime = compontInfo.planEndTime;
+                        compontInfo.demandTimeStr = compontInfo.planEndTimeStr;
+                        compontInfos.Add(compontInfo);
+                    }
+                }
+                return compontInfos;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+
+
+        public static bool AddCompont(int parent)
+        {
+            return true;
+        }
+    }
+
+    public class CompontInfo
+    {
+        public int id { get; set; }
+        public int componentID { get; set; }
+        public string taskNum { get; set; }
+        public string taskName { get; set; }
+        public string staffName { get; set; }
+        public int staffID { get; set; }
+        public int version { get; set; }
+        public string allConponentNum { get; set; }
+        public string planStartTimeStr { get; set; }
+        public DateTime planStartTime { get; set; }
+        public string planEndTimeStr { get; set; }
+        public DateTime planEndTime { get; set; }
+        public string demandTimeStr { get; set; }
+        public DateTime demandTime { get; set; }
+        public string craftPersonName { get; set; }
+        public int craftPersonID { get; set; }
+        public string arrangeTaskTimeStr { get; set; }
+        public DateTime arrangeTaskTime { get; set; }
+        public string acceptTaskTimeStr { get; set; }
+        public DateTime acceptTaskTime { get; set; }
+
+        public string planCompletionTimeStr { get; set; }
+        public DateTime planCompletionTime { get; set; }
+
+        public string processCardUploadTimeStr { get; set; }
+        public DateTime processCardUploadTime { get; set; }
+        public string processCardUploadPath { get; set; }
+
+        public string processScheduleUpTimeStr { get; set; }
+        public DateTime processScheduleUpTime { get; set; }
+        public string processScheduleUpPath { get; set; }
+
+        public string programFileUploadTimeStr { get; set; }
+        public DateTime programFileUploadTime { get; set; }
+        public string programFileUploadPath { get; set; }
+
+        public string processFileUploadTimeStr { get; set; }
+        public DateTime processFileUploadTime { get; set; }
+        public string processFileUploadPath { get; set; }
+
+        public string otherFileTimeStr { get; set; }
+        public DateTime otherFileTime { get; set; }
+        public string otherFilePath { get; set; }
+
+        public string completeTimeStr { get; set; }
+        public DateTime completeTime { get; set; }
+
+        public string taskStateStr { get; set; }
+        public int taskState { get; set; }
+
+
+        public string creatTimeStr { get; set; }
+        public DateTime creatTime { get; set; }
+        public string createPersonName { get; set; }
+        public int creatPersonID { get; set; }
+        public string lastAlterTimeStr { get; set; }
+        public DateTime lastAlterTime { get; set; }
+        public string lastAlterPersonName { get; set; }
+        public int lastAlterPersonID { get; set; }
+        public string state { get; set; }
+
+
+
+        public List<CompontInfo> listCompontInfos { get; set; }
+        public List<TaskInfo> taskInfos { get; set; }
+    }
+}

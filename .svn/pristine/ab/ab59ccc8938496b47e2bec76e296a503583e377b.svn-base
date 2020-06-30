@@ -1,0 +1,80 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+namespace 北京工艺文件管理MVC.Models
+{
+    public class TaskInfoManage
+    {
+
+
+    }
+
+    public class TaskInfo
+    {
+        public int id { get; set; }
+        public int componentID { get; set; }
+        public string taskNum { get; set; }
+        public string orderNum { get; set; }
+        public int version { get; set; }
+        public string taskName { get; set; }
+        public string creatTimeStr { get; set; }
+        public DateTime creatTime { get; set; }
+        public string staffName { get; set; }
+        public int staffID { get; set; }
+
+        public string planStartTimeStr { get; set; }
+        public DateTime planStartTime { get; set; }
+        public string planEndTimeStr { get; set; }
+        public DateTime planEndTime { get; set; }
+
+        public string demandTimeStr { get; set; }
+        public DateTime demandTime { get; set; }
+
+        public string craftPersonName { get; set; }
+        public int craftPersonID { get; set; }
+        public string arrangeTaskTimeStr { get; set; }
+        public DateTime arrangeTaskTime { get; set; }
+        public string acceptTaskTimeStr { get; set; }
+        public DateTime acceptTaskTime { get; set; }
+
+        public string planCompletionTimeStr { get; set; }
+        public DateTime planCompletionTime { get; set; }
+
+        public string processCardUploadTimeStr { get; set; }
+        public DateTime processCardUploadTime { get; set; }
+        public string processCardUploadPath { get; set; }
+
+        public string  processScheduleUpTimeStr { get; set; }
+        public DateTime processScheduleUpTime { get; set; }
+        public string processScheduleUpPath { get; set; }
+
+        public string programFileUploadTimeStr { get; set; }
+        public DateTime programFileUploadTime { get; set; }
+        public string programFileUploadPath { get; set; }
+
+        public string processFileUploadTimeStr { get; set; }
+        public DateTime processFileUploadTime { get; set; }
+        public string processFileUploadPath { get; set; }
+
+        public string otherFileTimeStr { get; set; }
+        public DateTime otherFileTime { get; set; }
+        public string otherFilePath { get; set; }
+
+        public string completeTimeStr{get;set;}
+        public DateTime completeTime { get; set; }
+
+        public string taskStateStr { get; set; }
+        public int taskState { get; set; }
+
+        public string creatPersonName { get; set; }
+        public int creatPersonID { get; set; }
+
+        public string lastAlterTimeStr { get; set; }
+        public DateTime lastAlterTime { get; set; }
+        public string lastAlterPersonName { get; set; }
+        public int lastAlterPersonID { get; set; }
+        public string state { get; set; }
+    }
+}

@@ -1,0 +1,162 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <link href="/Resources/js/layui-v2.5.4/layui/css/layui.css" rel="stylesheet" />
+    <script src="/Resources/js/layui-v2.5.4/layui/layui.js"></script>
+    <script src="/Resources/js/jquery-3.3.1.js"></script>
+</head>
+<body style="padding:10px">
+  
+            <table id="table1" lay-filter="filter1"></table>
+    <script type="text/html" id="switchTpl">
+  <!-- 这里的 checked 的状态只是演示 -->
+  <input type="checkbox" name="{{d.toolingDrawingsUploadPersonID}}" value="{{d.id}}" lay-skin="switch" lay-text="是|否" lay-filter="sexDemo" {{ type=="工装图纸"?( d.toolingDrawingsUploadIsComplete? 'checked' : ''): ( d.processFileUploadIsComplete? 'checked' : '')}} {{d.toolingDrawingsUploadPersonID == sessionStorage.getItem("loginId")?'':'disabled'}}>
+</script>
+    <script>
+      
+        function fun(id1, allId,  type1,show1) {//  group1  车  钳 
+       id=id1
+       show = show1
+       type = type1
+            layui.use(['table','form'], function () {
+                var table = layui.table,form=layui.form;
+
+                if (type == "工装图纸") {
+                    table1 = table.render({
+                        elem: '#table1'
+                   , toolbar: '#toolbarDemo1' //开启头部工具栏，并为其绑定左侧模板
+                   , url: '/CompontCraftDesign/GetPartsProcessInfoByPartTask'
+                     , method: 'post',
+                        where: { taskId: id,}
+                        // , page: true
+                        //, height: height
+                  , defaultToolbar: []
+                   , cols: [[ //表头
+                      //{ type: 'checkbox', fixed: 'left' },
+                     { field: 'processNum', title: '工序号', },
+                       { field: 'processingTypeStr', title: '组别', },
+                          { field: 'toolingDrawingsUploadPersonName', title: '责任人', },
+                        {
+                            field: 'toolingDrawingsUploadCompleteTimeStr', title: '完成时间', templet: function (row) {
+                                if (row.toolingDrawingsUploadCompleteTimeStr != "" & row.toolingDrawingsUploadCompleteTimeStr != null) {
+                                    return '<p style="color:blue;text-decoration:underline">' + row.toolingDrawingsUploadCompleteTimeStr + '</p>'
+                                } else {
+                                    return '<p style="color:blue;text-decoration:underline">点击上传</p>'
+                                }
+                            }
+                        },
+                        { field: 'toolingDrawingsUploadIsComplete', title: '是否完成',  templet: '#switchTpl', unresize: true },
+                        { field: 'id', title: 'id', hide: true },
+                           { field: 'toolingDrawingsUploadPersonID' ,hide:true}
+                   ]], done: function () {
+                       $(".layui-table-tool-temp").css('padding-right', 0)
+                     
+                       $('td[data-field="toolingDrawingsUploadCompleteTimeStr"]').click(function () {
+                           var processId = $(this).siblings('td[data-field="id"]').children().text()
+                           var processingTypeStr = $(this).siblings('td[data-field="processingTypeStr"]').children().text()
+                           var loginId = $(this).siblings('td[data-field="toolingDrawingsUploadPersonID"]').children().text()
+                           layer.open({
+                               type: 2,
+                               area: ['500px', '400px'],
+                               content: '/Home/Com工序文件',
+                               success: function (layero, index) {
+                                  
+                                   var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                                   iframeWin.fun(processId, "工装图纸", processingTypeStr,show,loginId);
+                                   //
+                               }
+                           });
+                       })
+                       //if (!bool) {
+                       //    $('.layui-table-tool').remove()
+                       //    $('.layui-btn-danger').remove()
+                       //}
+                   }
+                    });
+                } else if (type == "加工程序") {
+
+                    table1 = table.render({
+                        elem: '#table1'
+        , toolbar: '#toolbarDemo1' //开启头部工具栏，并为其绑定左侧模板
+        , url: '/CompontCraftDesign/GetPartsProcessInfoByPartTask'
+          , method: 'post',
+                        where: { taskId: id, }
+                        // , page: true
+                        //, height: height
+       , defaultToolbar: []
+        , cols: [[ //表头
+           //{ type: 'checkbox', fixed: 'left' },
+          { field: 'processNum', title: '工序号', },
+            { field: 'processingTypeStr', title: '组别', },
+               { field: 'toolingDrawingsUploadPersonName', title: '责任人', },
+             {
+                 field: 'processFileUploadCompleteTimeStr', title: '上传时间', templet: function (row) {
+                     if (row.processFileUploadCompleteTimeStr != "" & row.processFileUploadCompleteTimeStr != null) {
+                         return '<p style="color:blue">' + row.processFileUploadCompleteTimeStr + '</p>'
+                     } else {
+                         return '<p style="color:blue">点击上传</p>'
+                     }
+                 }
+             },
+               { field: 'processFileUploadIsComplete', title: '是否完成', templet: '#switchTpl', unresize: true },
+              { field: 'id', title: 'id',hide:true },
+        { field: 'toolingDrawingsUploadPersonID' ,hide:true}
+        ]], done: function () {
+            $(".layui-table-tool-temp").css('padding-right', 0)
+            $('td[data-field="processFileUploadCompleteTimeStr"]').click(function () {
+                var processId = $(this).siblings('td[data-field="id"]').children().text()
+                var processingTypeStr = $(this).siblings('td[data-field="processingTypeStr"]').children().text()
+                var loginId = $(this).siblings('td[data-field="toolingDrawingsUploadPersonID"]').children().text()
+                layer.open({
+                    type: 2,
+                    area:['500px','400px'],
+                    content: '/Home/Com工序文件',
+                    success: function (layero, index) {
+                    
+                        var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                        iframeWin.fun(processId, "加工程序", processingTypeStr,show,loginId);
+                      
+                    }
+                });
+            })
+            //if (!bool) {
+            //    $('.layui-table-tool').remove()
+            //    $('.layui-btn-danger').remove()
+            //}
+        }
+                    });
+
+                }
+                //监听性别操作
+                form.on('switch(sexDemo)', function (obj) {
+                    //
+                    if (this.name == sessionStorage.getItem("loginId")) {
+                        $.ajax({
+                            url: '/CompontCraftDesign/ChangeProcessFileUploadStatus',
+                            type: 'post',
+                            data: { processId: this.value, fileFlag: type, isComplete: obj.elem.checked ? '1' : '0' },
+                            success: function (res) {
+                                if (res == "ok") {
+                                    layer.msg("修改成功", { icon: 1, time: 1000 }, function () {
+                                        table1.reload()
+                                    })
+                                } else { layer.alert(res) }
+                            }
+                        })
+                    } else {
+                        //$(this).click()
+                    }
+                
+                   
+                   // layer.tips(this.value + ' ' + this.name + '：' + obj.elem.checked, obj.othis);
+                });
+
+            });
+        }
+     
+      
+    </script>
+</body>
+</html>

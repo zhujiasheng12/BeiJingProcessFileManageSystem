@@ -1,0 +1,164 @@
+﻿using System;
+using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Data.Entity;
+using System.Linq;
+using System.Web;
+
+namespace 北京工艺文件管理MVC.Models
+{
+    public class ModelDBContext : DbContext
+    {
+        public ModelDBContext()
+            : base("name=DefaultConnection")
+        {
+            //自动创建表，如果Entity有改到就更新到表结构
+        }
+
+        public virtual DbSet<JDJS_PDMS_Device_Brand_Info_Row> JDJS_PDMS_Device_Brand_Info { get; set; }
+        public virtual DbSet<JDJS_PDMS_Device_Type_Info_Row> JDJS_PDMS_Device_Type_Info { get; set; }
+        public virtual DbSet<JDJS_PDMS_Device_Info_Row> JDJS_PDMS_Device_Info { get; set; }
+        public virtual DbSet<JDJS_PDMS_Location_Info_Row> JDJS_PDMS_Location_Info { get; set; }
+        public virtual DbSet<JDJS_PDMS_Staff_Table_Row> JDJS_PDMS_Staff_Table { get; set; }
+        public virtual DbSet<JDJS_PDMS_TaskInfo_Table_Row> JDJS_PDMS_TaskInfo_Table { get; set; }
+        public virtual DbSet<JDJS_PDMS_TaskInfo_Alter_History_Table_Row> JDJS_PDMS_TaskInfo_Alter_History_Table { get; set; }
+        public virtual DbSet<JDJS_PDMS_CraftFile_Alter_History_Table_Row> JDJS_PDMS_CraftFile_Alter_History_Table { get; set; }
+    }
+    public class JDJS_PDMS_Device_Brand_Info_Row
+    {
+        [Key]
+        public int ID { get; set; }
+        public string Brand { get; set; }
+
+    }
+
+    public class JDJS_PDMS_Device_Type_Info_Row
+    {
+        [Key]
+        public int ID { get; set; }
+        public string Type { get; set; }
+        [ForeignKey("brand")]
+        public int? BrandID { get; set; }
+        [Required]
+        public virtual JDJS_PDMS_Device_Brand_Info_Row brand { get; set; }
+
+    }
+
+    public class JDJS_PDMS_Device_Info_Row
+    {
+        [Key]
+        public int ID { get; set; }
+        public string MachNum { get; set; }
+        public string IP { get; set; }
+        [ForeignKey("type")]
+        public int? TypeID { get; set; }
+        [ForeignKey("location")]
+        public int? LocationID { get; set; }
+        [Required]
+        public virtual JDJS_PDMS_Device_Type_Info_Row type { get; set; }
+        [Required]
+        public virtual JDJS_PDMS_Location_Info_Row location { get; set; }
+    }
+
+
+
+    public class JDJS_PDMS_Location_Info_Row
+    {
+        [Key]
+        public int ID { get; set; }
+        public string LocationName { get; set; }
+        public int? Size { get; set; }
+        public string EndDate { get; set; }
+        public int? ParentID { get; set; }
+
+    }
+
+
+    public class JDJS_PDMS_Staff_Table_Row
+    {
+        [Key]
+        public int ID { get; set; }
+        public string Staff { get; set; }
+        public string Posiation { get; set; }
+        public string Tel { get; set; }
+        public int? ParentID { get; set; }
+        public string Users { get; set; }
+        public string PassWord { get; set; }
+        public string Limit { get; set; }
+        public string Reamrk { get; set; }
+        public string MailBox { get; set; }
+        public int? OrderNumID { get; set; }
+
+
+
+    }
+
+    public class JDJS_PDMS_TaskInfo_Table_Row
+    {
+        [Key]
+        public int ID { get; set; }
+        public string ComponentNum { get; set; }
+        public string ComponentName { get; set; }
+        public string TaskNum { get; set; }
+        public int? Version { get; set; }
+        public string TaskName { get; set; }
+        public DateTime? CreatTime { get; set; }
+        [ForeignKey("staff")]
+        public int? staffID { get; set; }
+        public DateTime? DemandTime { get; set; }
+        public int? CraftPersonID { get; set; }
+        public DateTime? ArrangeTaskTime { get; set; }
+        public DateTime? AcceptTaskTime { get; set; }
+        public DateTime? PlanCompletionTime { get; set; }
+        public DateTime? ProcessCardUploadTime { get; set; }
+        public string ProcessCardUploadPath { get; set; }
+        public DateTime? ProcessScheduleUpTime { get; set; }
+        public string ProcessScheduleUpPath { get; set; }
+        public DateTime? ProgramFileUploadTime { get; set; }
+        public string ProgramFileUploadPath { get; set; }
+        public DateTime? ProcessFileUploadTime { get; set; }
+        public string ProcessFileUploadPath { get; set; }
+        public DateTime? OtherFileTime { get; set; }
+        public string OtherFilePath { get; set; }
+        public DateTime? CompleteTime { get; set; }
+        public int? State { get; set; }
+        [Required]
+        public virtual JDJS_PDMS_Staff_Table_Row staff { get; set; }
+    }
+
+    public class JDJS_PDMS_TaskInfo_Alter_History_Table_Row
+    {
+        [Key]
+        public int ID { get; set; }
+        [ForeignKey("task")]
+        public int? TaskID { get; set; }
+        public DateTime? AlterTime { get; set; }
+        public string AlterDesc { get; set; }
+        public int? AfterVersion { get; set; }
+        [ForeignKey("staff")]
+        public int? staffID { get; set; }
+        [Required]
+        public virtual JDJS_PDMS_Staff_Table_Row staff { get; set; }
+        [Required]
+        public virtual JDJS_PDMS_TaskInfo_Table_Row task { get; set; }
+    }
+
+    public class JDJS_PDMS_CraftFile_Alter_History_Table_Row
+    {
+        [Key]
+        public int ID { get; set; }
+        [ForeignKey("task")]
+        public int? TaskID { get; set; }
+        public DateTime? AlterTime { get; set; }
+        public string AlterDesc { get; set; }
+        [ForeignKey("staff")]
+        public int? staffID { get; set; }
+        [Required]
+        public virtual JDJS_PDMS_TaskInfo_Table_Row task { get; set; }
+        [Required]
+        public virtual JDJS_PDMS_Staff_Table_Row staff { get; set; }
+    }
+
+
+}

@@ -1,0 +1,117 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+     <link href="/Resources/js/easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="/Resources/js/easyui/themes/icon.css" rel="stylesheet" />
+    <link href="/Resources/js/easyui/demo/demo.css" rel="stylesheet" />
+    <script src="/Resources/js/easyui/jquery.min.js"></script>
+    <script src="/Resources/js/easyui/jquery.easyui.min.js"></script>
+
+    <link href="/Resources/js/layui-v2.5.4/layui/css/layui.css" rel="stylesheet" />
+    <script src="/Resources/js/layui-v2.5.4/layui/layui.js"></script>
+   <!-- <script src="/Resources/js/jquery-3.3.1.js"></script>-->
+</head>
+<body>
+    <form class="layui-form">
+        <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+
+
+        <div class="layui-form-item" style="margin-right:15px">
+            <label class="layui-form-label" style="width:120px">产品名称<span style="color:red">*</span></label>
+            <div class="layui-input-block" style="margin-left:120px">
+                <input lay-verify="required" type="text" name="compontName" placeholder="必填项" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item"style="margin-right:15px">
+            <label class="layui-form-label" style="width:120px">产品代号<span style="color:red">*</span></label>
+            <div class="layui-input-block"style="margin-left:120px">
+                <input lay-verify="required" type="text" name="compontNum" placeholder="必填项" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+
+
+
+        <div class="layui-form-item"style="margin-right:15px">
+            <label class="layui-form-label" style="width:120px">计划开始时间<span style="color:red">*</span></label>
+            <div class="layui-input-block"style="margin-left:120px">
+                <input lay-verify="required" type="text" name="planStartTime" id="planStartTime" lay-verify="date" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item"style="margin-right:15px">
+            <label class="layui-form-label" style="width:120px">计划完成时间<span style="color:red">*</span></label>
+            <div class="layui-input-block"style="margin-left:120px">
+                <input lay-verify="required" type="text" name="planEndTime" id="planEndTime" lay-verify="date" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item" style="text-align:center">
+            <div class="layui-input-block" style="margin-left:0">
+                <button class="layui-btn" lay-submit lay-filter="*">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+        <!-- 更多表单结构排版请移步文档左侧【页面元素-表单】一项阅览 -->
+    </form>
+
+    <script>
+    
+        layui.use(['form', 'laydate'], function () {
+            var form = layui.form, laydate = layui.laydate;
+            //日期
+            laydate.render({
+                elem: '#planStartTime',
+                type: 'datetime',
+                trigger: 'click' //采用click弹出
+            });
+            laydate.render({
+                elem: '#planEndTime',
+                type: 'datetime',
+                trigger: 'click' //采用click弹出
+            });
+            form.on('submit(*)', function (data) {
+
+                layer.confirm("是否提交", function () {
+             
+                 
+                    data.field.parentId = id;
+                    $.ajax({
+                        url: "/Task/AddCompont",
+                        type: 'post',
+                        data: data.field,
+                      
+                        success: function (res) {
+                            if (res == "ok") {
+                                layer.msg("上传成功", { icon: 1, time: 1000 }, function () {
+                                    var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                    parent.layer.close(index); //再执行关闭    
+                                   parent.location.reload()
+                                })
+                            } else { layer.alert(res) }
+                        }
+                    })
+                })
+
+                return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+            });
+        });
+        function  fun(id1, allConponentNum1){
+            id = id1;
+            allConponentNum1
+            if (Number(id) != 0) {
+              
+                $('[name="compontName"]').parent().siblings('label').text("");
+                $('[name="compontName"]').parent().siblings('label').append('组件名<span style="color:red">*</span>')
+                $('[name="compontNum"]').parent().siblings('label').text("");
+                $('[name="compontNum"]').parent().siblings('label').append('组件代号<span style="color:red">*</span>')
+            }
+        }
+    </script>
+</body>
+</html>

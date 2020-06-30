@@ -1,0 +1,4 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<repositories>
+  <repository path="..\北京工艺文件管理MVC\packages.config" />
+</repositories>

@@ -1,0 +1,119 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+namespace WebApplication2.Model.人员管理
+{
+    /// <summary>
+    /// JDJS_WMS_Staff_InfoRead 的摘要说明
+    /// </summary>
+    public class JDJS_WMS_Staff_InfoRead : IHttpHandler
+    {
+
+        public void ProcessRequest(HttpContext context)
+        {
+            
+            //string staffStr="";
+            //string err="";
+            //if (ReadStaff(out staffStr, ref err)) {
+            //    context.Response.Write(staffStr);
+            //} else {
+            //    context.Response.Write(err);
+            //};
+        }
+
+
+        //public static bool ReadStaff(out string StaffStr, ref string errMsg)
+        //{
+        //    try
+        //    {
+        //        List<JDJS_WMS_Staff_InfoReadClass> staffLists = new List<JDJS_WMS_Staff_InfoReadClass>();
+        //        using (Model1 entities1 = new Model1())
+        //        {
+        //            addData(staffLists, entities1.JDJS_PDMS_Staff_Table.ToList());
+        //            System.Web.Script.Serialization.JavaScriptSerializer serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+        //            var json = serializer.Serialize(staffLists);
+        //            StaffStr = json;
+        //        }
+        //        return true;
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        StaffStr = "";
+        //        errMsg = ex.Message;
+        //        return false;
+        //    }
+        //}
+
+
+
+
+
+        //private static void addData(List<JDJS_WMS_Staff_InfoReadClass> jsons, List<JDJS_PDMS_Staff_Table_Row> JDJS_WMS_Staff_Infos)
+        //{
+        //    if (jsons.Count() == 0)
+        //    {
+        //        var parents = JDJS_WMS_Staff_Infos.Where(r => r.ParentID == 0);
+        //        foreach (var item in parents)
+        //        {
+        //            jsons.Add(new JDJS_WMS_Staff_InfoReadClass
+        //            {
+        //                id = item.ID,
+        //                staff = item.Staff,
+        //                position = item.Posiation,
+        //                tel = item.Tel,
+        //                //iconCls = "icon-ok"
+        //            });
+
+
+        //        }
+        //        addData(jsons, JDJS_WMS_Staff_Infos);
+        //    }
+        //    else
+        //    {
+        //        foreach (var item in jsons)
+        //        {
+        //            var sons = JDJS_WMS_Staff_Infos.Where(r => r.ParentID == item.id);
+        //            if (sons.Count() > 0)
+        //            {
+        //                foreach (var i in sons)
+        //                {
+        //                    item.children.Add(new JDJS_WMS_Staff_InfoReadClass
+        //                    {
+        //                        id = i.ID,
+        //                        staff = i.Staff,
+        //                        position = i.Posiation,
+        //                        tel = i.Tel,
+        //                        remark = i.Reamrk,
+        //                        mailbox = i.MailBox,
+        //                        //iconCls = "icon-ok"
+        //                    });
+
+        //                }
+        //                addData(item.children, JDJS_WMS_Staff_Infos);
+        //            }
+
+        //        }
+        //    }
+        //}
+        public bool IsReusable
+        {
+            get
+            {
+                return false;
+            }
+        }
+    }
+    class JDJS_WMS_Staff_InfoReadClass
+    {
+        public int id;
+        public string staff;
+        public string position;
+        public string tel;
+        public string iconCls;
+        public string remark;
+        public string mailbox;
+        public List<JDJS_WMS_Staff_InfoReadClass> children = new List<JDJS_WMS_Staff_InfoReadClass>();
+    }
+}

@@ -1,0 +1,386 @@
+﻿
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+namespace WebApplication2.View.工艺文件管理
+{
+    /// <summary>
+    /// adminRead 的摘要说明
+    /// </summary>
+    public class adminRead : IHttpHandler
+    {
+        System.Web.Script.Serialization.JavaScriptSerializer serializer = new System.Web.Script.Serialization.JavaScriptSerializer();
+        public void ProcessRequest(HttpContext context)
+        {
+            string err = "";
+          var tasks=  ReadTask(ref err);
+          if (err == "") {
+              var key = context.Request.QueryString["key"];
+              if (key != null&key!="") {
+                  tasks = tasks.Where(r => r.TaskNum.Contains(key)| r.TaskName == key | r.ComponentName == key | r.ComponentNum == key).ToList();
+              }
+              var page = Convert.ToInt32(context.Request.QueryString["page"]);
+              var limit = Convert.ToInt32(context.Request.QueryString["limit"]);
+              var model = new { code = 0, data = tasks.Skip((page-1)*limit).Take(limit),count=tasks.Count };
+              var json = serializer.Serialize(model);
+              context.Response.Write(json);
+
+          }else if(err=="当前无任务"){
+              context.Response.Write("{\"code\":0,\"data\":[]}");
+          } else {
+              context.Response.Write(err);
+          }
+        }
+        /// <summary>
+        /// 读取任务列表
+        /// </summary>
+        /// <param name="errMsg"></param>
+        /// <returns>返回任务类的列表，当此值Null时需要查看errMsg</returns>
+        public static List<TaskInfo> ReadTask(ref string errMsg)
+        {
+            return null;
+            //try
+            //{
+            //    List<TaskInfo> taskInfoList = new List<TaskInfo>();
+            //    using (Model1 mod = new Model1())
+            //    {
+
+            //        var tasks = mod.JDJS_PDMS_TaskInfo_Table;
+            //        if (tasks.Count() < 1)
+            //        {
+            //            errMsg = "当前无任务";
+            //            return null;
+            //        }
+            //        foreach (JDJS_PDMS_TaskInfo_Table_Row task in tasks)
+            //        {
+            //            TaskInfo taskInfo = new TaskInfo();
+            //            taskInfo.ID = task.ID;
+            //            taskInfo.ComponentNum = task.ComponentNum;
+            //            taskInfo.ComponentName = task.ComponentName;
+            //            if (task.AcceptTaskTime ==null)
+            //            {
+            //                taskInfo.AcceptTaskTimeStr = "";
+            //            }
+
+            //            else
+            //            {
+            //                taskInfo.AcceptTaskTimeStr = task.AcceptTaskTime.ToString().Substring (0,task.AcceptTaskTime .ToString().LastIndexOf (":"));
+            //                taskInfo.AcceptTaskTime = Convert.ToDateTime(task.AcceptTaskTime);
+            //            }
+                        
+            //            if (task.ArrangeTaskTime ==null)
+            //            {
+            //                taskInfo.ArrangeTaskTimeStr = "";
+            //            }
+            //            else
+            //            {
+            //                taskInfo.ArrangeTaskTimeStr = task.ArrangeTaskTime.ToString().Substring(0, task.ArrangeTaskTime.ToString().LastIndexOf (":"));
+            //                taskInfo.ArrangeTaskTime =Convert.ToDateTime ( task.ArrangeTaskTime);
+            //            }
+                        
+            //            taskInfo.CompleteTimeStr = "";
+            //            if (task.CompleteTime !=null)
+            //            {
+            //                taskInfo.CompleteTimeStr = task.CompleteTime.ToString().Substring (0,task.CompleteTime .ToString ().LastIndexOf (":"));
+            //                taskInfo.CompleteTime =Convert.ToDateTime ( task.CompleteTime);
+            //            }
+            //            if (task.CraftPersonID != null)
+            //            {
+            //                taskInfo.CraftPersonID = Convert.ToInt32(task.CraftPersonID);
+            //                var staff = mod.JDJS_PDMS_Staff_Table.Where(r => r.ID == task.CraftPersonID).FirstOrDefault();
+            //                if (staff != null)
+            //                {
+            //                    taskInfo.CraftPersonName = staff.Staff;
+            //                }
+            //            }
+            //            if (task.staffID != null)
+            //            {
+            //                taskInfo.CreatPersonID =Convert .ToInt32 ( task.staffID);
+            //                var staffs = mod.JDJS_PDMS_Staff_Table.Where(r => r.ID == task.staffID).FirstOrDefault();
+            //                if (staffs != null)
+            //                {
+            //                    taskInfo.CreatPersonName = staffs.Staff;
+            //                }
+            //            }
+            //            taskInfo.CreatTimeStr = "";
+            //            if (task.CreatTime !=null)
+            //            {
+            //                taskInfo.CreatTimeStr = task.CreatTime.ToString().Substring (0,task.CreatTime .ToString ().LastIndexOf(":"));
+            //                taskInfo.CreatTime =Convert .ToDateTime ( task.CreatTime);
+            //            }
+                        
+            //            taskInfo.DemandTimeStr = "";
+            //            if (task.DemandTime !=null)
+            //            {
+            //                taskInfo.DemandTimeStr = task.DemandTime.ToString().Substring (0,task.DemandTime .ToString ().LastIndexOf (":"));
+            //                taskInfo.DemandTimeStrAll = task.DemandTime.ToString();
+            //                taskInfo.DemandTime =Convert.ToDateTime ( task.DemandTime);
+            //            }
+                        
+            //            taskInfo.OtherFileTimeStr = "";
+            //            if (task.OtherFileTime !=null)
+            //            {
+            //                taskInfo.OtherFileTimeStr = task.OtherFileTime.ToString().Substring (0,task.OtherFileTime .ToString ().LastIndexOf (":"));
+            //                taskInfo.OtherFileTime =Convert.ToDateTime ( task.OtherFileTime);
+            //            }
+                        
+            //            task.OtherFilePath = task.OtherFilePath;
+            //            taskInfo.PlanCompletionTimeStr = "";
+            //            if (task.PlanCompletionTime !=null)
+            //            {
+            //                taskInfo.PlanCompletionTimeStr = task.PlanCompletionTime.ToString().Substring (0,task.PlanCompletionTime .ToString ().LastIndexOf (":"));
+            //                taskInfo.PlanCompletionTime =Convert .ToDateTime ( task.PlanCompletionTime);
+
+            //            }
+                        
+            //            taskInfo.ProcessCardUploadTimeStr = "";
+            //            if (task.ProcessCardUploadTime !=null)
+            //            {
+            //                taskInfo.ProcessCardUploadTimeStr = task.ProcessCardUploadTime.ToString().Substring (0,task.ProcessCardUploadTime .ToString ().LastIndexOf (":"));
+            //                taskInfo.ProcessCardUploadTime =Convert.ToDateTime ( task.ProcessCardUploadTime);
+            //            }
+            //            taskInfo.ProcessCardUploadPath = task.ProcessCardUploadPath;
+                        
+            //            taskInfo.ProcessFileUploadTimeStr = "";
+            //            if (task.ProcessFileUploadTime !=null)
+            //            {
+            //                taskInfo.ProcessFileUploadTimeStr = task.ProcessFileUploadTime.ToString().Substring (0,task.ProcessFileUploadTime .ToString ().LastIndexOf (":"));
+            //                taskInfo.ProcessFileUploadTime =Convert.ToDateTime ( task.ProcessFileUploadTime);
+            //            }
+            //            taskInfo.ProcessFileUploadPath = task.ProcessFileUploadPath;
+                        
+            //            taskInfo.ProcessScheduleUpTimeStr = "";
+            //            if (task.ProcessScheduleUpTime !=null)
+            //            {
+            //                taskInfo.ProcessScheduleUpTimeStr = task.ProcessScheduleUpTime.ToString().Substring (0,task.ProcessScheduleUpTime .ToString ().LastIndexOf (":"));
+            //                taskInfo.ProcessScheduleUpTime =Convert.ToDateTime ( task.ProcessScheduleUpTime);
+            //            }
+            //            taskInfo.ProcessScheduleUpPath = task.ProcessScheduleUpPath;
+                       
+            //            taskInfo.ProgramFileUploadTimeStr = "";
+            //            if (task.ProgramFileUploadTime > DateTime.Now.AddYears(-100))
+            //            {
+            //                taskInfo.ProgramFileUploadTimeStr = task.ProgramFileUploadTime.ToString().Substring(0, task.ProgramFileUploadTime.ToString().LastIndexOf(":"));
+            //            }
+            //            taskInfo.ProgramFileUploadPath = task.ProgramFileUploadPath;
+            //            task.ProgramFileUploadTime = task.ProgramFileUploadTime;
+            //            taskInfo.State =Convert.ToInt32 ( task.State);
+            //            switch (task.State)
+            //            {
+            //                case 0:
+            //                    taskInfo.StateStr = "待完成";
+            //                    break;
+            //                case 1:
+            //                    taskInfo.StateStr = "待完成";
+            //                    break;
+            //                case 2:
+            //                    taskInfo.StateStr = "待完成";
+            //                    break;
+            //                case 3:
+            //                    taskInfo.StateStr = "待完成";
+            //                    break;
+            //                case 4:
+            //                    taskInfo.StateStr = "已完成";
+            //                    break;
+            //                case 5:
+            //                    break;
+            //                case 6:
+            //                    break;
+            //                case 7:
+            //                    break;
+            //                case 8:
+            //                    break;
+            //                default:
+            //                    break;
+
+            //            }
+            //            taskInfo.TaskName = task.TaskName;
+            //            taskInfo.TaskNum = task.TaskNum.Substring (task.ComponentNum.Length);
+            //            taskInfo.Version =Convert.ToInt32 ( task.Version);
+            //            taskInfoList.Add(taskInfo);
+
+
+
+            //        }
+            //    }
+            //    taskInfoList = taskInfoList.OrderBy(r => r.State).ThenBy(r => r.DemandTime).ToList(); 
+            //    return taskInfoList;
+            //}
+            //catch (Exception ex)
+            //{
+            //    errMsg = ex.Message;
+            //    return null;
+            //}
+
+        }
+        public bool IsReusable
+        {
+            get
+            {
+                return false;
+            }
+        }
+    }
+    public class TaskInfo
+    {
+        /// <summary>
+        /// 任务主键ID
+        /// </summary>
+        public int ID { get; set; }
+        /// <summary>
+        /// 组件号
+        /// </summary>
+        public string ComponentNum;
+        /// <summary>
+        /// 组件名称
+        /// </summary>
+        public string ComponentName;
+        /// <summary>
+        /// 任务编号
+        /// </summary>
+        public string TaskNum { get; set; }
+        /// <summary>
+        /// 任务版本号
+        /// </summary>
+        public int Version { get; set; }
+        /// <summary>
+        /// 任务名称
+        /// </summary>
+        public string TaskName { get; set; }
+        /// <summary>
+        /// 创建时间（不用）
+        /// </summary>
+        public DateTime CreatTime { get; set; }
+        /// <summary>
+        /// 创建时间的字符串
+        /// </summary>
+        public string CreatTimeStr { get; set; }
+        /// <summary>
+        /// 创建人员ID
+        /// </summary>
+        public int CreatPersonID { get; set; }
+        /// <summary>
+        /// 创建人名称
+        /// </summary>
+        public string CreatPersonName { get; set; }
+        /// <summary>
+        /// 需求时间（不用）
+        /// </summary>
+        public DateTime DemandTime { get; set; }
+        /// <summary>
+        /// 需求时间字符串
+        /// </summary>
+        public string DemandTimeStr { get; set; }
+        public string DemandTimeStrAll { get; set; }
+        /// <summary>
+        /// 工艺责任人ID
+        /// </summary>
+        public int CraftPersonID { get; set; }
+        /// <summary>
+        /// 工艺责任人姓名
+        /// </summary>
+        public string CraftPersonName { get; set; }
+        /// <summary>
+        /// 安排任务时间（不用）
+        /// </summary>
+        public DateTime ArrangeTaskTime { get; set; }
+        /// <summary>
+        /// 安排任务时间字符串
+        /// </summary>
+        public string ArrangeTaskTimeStr { get; set; }
+        /// <summary>
+        /// 任务接收时间（不用）
+        /// </summary>
+        public DateTime AcceptTaskTime { get; set; }
+        /// <summary>
+        /// 任务接收时间字符串
+        /// </summary>
+        public string AcceptTaskTimeStr { get; set; }
+        /// <summary>
+        /// 计划完成时间（不用）
+        /// </summary>
+        public DateTime PlanCompletionTime { get; set; }
+        /// <summary>
+        /// 计划完成时间字符串
+        /// </summary>
+        public string PlanCompletionTimeStr { get; set; }
+        /// <summary>
+        /// 工艺卡文件上传时间（不用）
+        /// </summary>
+        public DateTime ProcessCardUploadTime { get; set; }
+        /// <summary>
+        /// 工艺卡上传时间字符串
+        /// </summary>
+        public string ProcessCardUploadTimeStr { get; set; }
+        /// <summary>
+        /// 工艺卡路径
+        /// </summary>
+        public string ProcessCardUploadPath { get; set; }
+        /// <summary>
+        /// 工艺进程单上传时间（不用）
+        /// </summary>
+        public DateTime ProcessScheduleUpTime { get; set; }
+        /// <summary>
+        /// 工艺进程单上传时间字符串
+        /// </summary>
+        public string ProcessScheduleUpTimeStr { get; set; }
+        /// <summary>
+        /// 工艺进程单上传路径
+        /// </summary>
+        public string ProcessScheduleUpPath { get; set; }
+        /// <summary>
+        /// 编程文件上传时间（不用）
+        /// </summary>
+        public DateTime ProgramFileUploadTime { get; set; }
+        /// <summary>
+        /// 编程文件上传时间字符串
+        /// </summary>
+        public string ProgramFileUploadTimeStr { get; set; }
+        /// <summary>
+        /// 工艺文件路径
+        /// </summary>
+        public string ProgramFileUploadPath { get; set; }
+        /// <summary>
+        /// 加工文件上传时间（不用）
+        /// </summary>
+        public DateTime ProcessFileUploadTime { get; set; }
+        /// <summary>
+        /// 加工文件上传时间字符串
+        /// </summary>
+        public string ProcessFileUploadTimeStr { get; set; }
+        /// <summary>
+        /// 加工文件路径
+        /// </summary>
+        public string ProcessFileUploadPath { get; set; }
+        /// <summary>
+        /// 其它文件上传时间（不用）
+        /// </summary>
+        public DateTime OtherFileTime { get; set; }
+        /// <summary>
+        /// 其它文件上传时间字符串
+        /// </summary>
+        public string OtherFileTimeStr { get; set; }
+        /// <summary>
+        /// 其它文件路径
+        /// </summary>
+        public string OtherFilePath { get; set; }
+        /// <summary>
+        /// 完成时间（不用）
+        /// </summary>
+        public DateTime CompleteTime { get; set; }
+        /// <summary>
+        /// 完成时间字符串
+        /// </summary>
+        public string CompleteTimeStr { get; set; }
+        /// <summary>
+        /// 状态标志
+        /// </summary>
+        public int State { get; set; }
+        /// <summary>
+        /// 当前状态
+        /// </summary>
+        public string StateStr { get; set; }
+    }
+}

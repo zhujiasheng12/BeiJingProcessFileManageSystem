@@ -1,0 +1,25 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.29926.136
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "北京工艺文件管理MVC", "北京工艺文件管理MVC\北京工艺文件管理MVC.csproj", "{42A12E7B-AB4C-4295-B953-C07F4726ECA7}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{42A12E7B-AB4C-4295-B953-C07F4726ECA7}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{42A12E7B-AB4C-4295-B953-C07F4726ECA7}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{42A12E7B-AB4C-4295-B953-C07F4726ECA7}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{42A12E7B-AB4C-4295-B953-C07F4726ECA7}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {FE0AB280-30AF-44EA-A427-263480E4B237}
+	EndGlobalSection
+EndGlobal

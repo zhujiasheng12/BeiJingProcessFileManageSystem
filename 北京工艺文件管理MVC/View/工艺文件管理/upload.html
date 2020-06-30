@@ -1,0 +1,158 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+     <link href="/Resources/js/easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="/Resources/js/easyui/themes/icon.css" rel="stylesheet" />
+    <link href="/Resources/js/easyui/demo/demo.css" rel="stylesheet" />
+    <script src="/Resources/js/easyui/jquery.min.js"></script>
+    <script src="/Resources/js/easyui/jquery.easyui.min.js"></script>
+
+    <link href="/Resources/js/layui-v2.5.4/layui/css/layui.css" rel="stylesheet" />
+    <script src="/Resources/js/layui-v2.5.4/layui/layui.js"></script>
+   <!-- <script src="/Resources/js/jquery-3.3.1.js"></script>-->
+</head>
+<body>
+    <form class="layui-form">
+        <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+
+
+        <div class="layui-form-item" style="margin-right:15px">
+            <label class="layui-form-label" style="width:100px">产品型号<span style="color:red">*</span></label>
+            <div class="layui-input-block">
+                <input lay-verify="required" type="text" name="groupNum" placeholder="必填项" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item"style="margin-right:15px">
+            <label class="layui-form-label" style="width:100px">产品名称<span style="color:red">*</span></label>
+            <div class="layui-input-block">
+                <input lay-verify="required" type="text" name="groupName" placeholder="必填项" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+
+
+        <div class="layui-form-item"style="margin-right:15px">
+            <label class="layui-form-label" style="width:100px">零件图号<span style="color:red">*</span></label>
+            <div class="layui-input-block">
+                <input lay-verify="required" type="text" name="TaskNum" placeholder="必填项" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item"style="margin-right:15px">
+            <label class="layui-form-label" style="width:100px">零件名称<span style="color:red">*</span></label>
+            <div class="layui-input-block">
+                <input lay-verify="required" type="text" name="TaskName" placeholder="必填项" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item"style="margin-right:15px">
+            <label class="layui-form-label" style="width:100px">计划时间<span style="color:red">*</span></label>
+            <div class="layui-input-block">
+                <input lay-verify="required" type="text" name="date" id="date" lay-verify="date" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item"style="margin-right:15px">
+            <label class="layui-form-label" style="width:100px">附件<span style="color:red">*</span></label>
+            <div class="layui-input-block">
+                <input lay-verify="required" id="file" type="file" name="" placeholder="必填项" autocomplete="off" class="layui-input" multiple>
+            </div>
+        </div>
+
+
+         <div class="layui-form-item"style="margin-right:15px">
+            <label class="layui-form-label" style="width:100px">工艺人员<span style="color:red">*</span></label>
+            <div class="layui-input-block">
+                <input  type="text" lay-verify="required" name="staffId" placeholder="必填项" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+     <!--   <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">备注</label>
+            <div class="layui-input-block">
+                <textarea placeholder="选填" class="layui-textarea"></textarea>
+            </div>
+        </div>-->
+        <div class="layui-form-item" style="text-align:center">
+            <div class="layui-input-block" style="margin-left:0">
+                <button class="layui-btn" lay-submit lay-filter="*">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+        <!-- 更多表单结构排版请移步文档左侧【页面元素-表单】一项阅览 -->
+    </form>
+
+    <script>
+        $(function () {
+            $('[name="staffId"]').combotreegrid({
+                value: '',
+                width: '100%',
+                panelWidth: 500,
+                label: '',
+                labelPosition: 'top',
+                url: '/View/人员管理/staffRead.ashx',
+                idField: 'id',
+                treeField: 'staff',
+                columns: [[
+                    { field: 'staff', title: '姓名', width: '100%' },
+
+                    { field: 'id', title: 'id', width: 100, hidden: true }
+                ]],
+                onLoadSuccess: function () {
+                    $('.tree-icon.tree-file').removeClass('tree-file')
+                    $('.tree-icon.tree-folder').removeClass('tree-folder')
+                }
+            });
+        });
+        layui.use(['form', 'laydate'], function () {
+            var form = layui.form, laydate = layui.laydate;
+            //日期
+            laydate.render({
+                elem: '#date',
+                type: 'datetime',
+                trigger: 'click' //采用click弹出
+            });
+            form.on('submit(*)', function (data) {
+
+                layer.confirm("是否提交", function () {
+                    var formData = new FormData();
+
+                    var files = document.getElementById("file").files;
+                    formData.append('groupNum', data.field.groupNum);
+                    formData.append('groupName', data.field.groupName);
+                    formData.append('TaskNum', data.field.TaskNum);
+                    formData.append('TaskName', data.field.TaskName);
+                    formData.append('date', data.field.date);
+                    formData.append('staffId', data.field.staffId);
+                    for (var i = 0; i < files.length; i++) {
+                        formData.append('file' + i, files[i]);
+                    }
+
+                    $.ajax({
+                        url: "upload.ashx",
+                        type: 'post',
+                        data: formData,
+                        contentType: false,
+                        processData: false,
+                        success: function (res) {
+                            if (res == "ok") {
+                                layer.msg("上传成功", { icon: 1, time: 1000 }, function () {
+                                    var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                    parent.layer.close(index); //再执行关闭    
+                                    parent.table1.reload()
+                                })
+                            } else { layer.alert(res) }
+                        }
+                    })
+                })
+
+                return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+            });
+        });
+    </script>
+</body>
+</html>

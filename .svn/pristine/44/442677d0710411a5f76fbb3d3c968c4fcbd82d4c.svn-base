@@ -1,0 +1,371 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <link href="/Resources/js/layui-v2.5.4/layui/css/layui.css" rel="stylesheet" />
+    <script src="/Resources/js/layui-v2.5.4/layui/layui.js"></script>
+    <script src="/Resources/js/jquery-3.3.1.js"></script>
+</head>
+<body>
+    <table id="demo" lay-filter="test"></table>
+    <script type="text/html" id="toolbarDemo">
+        <div class="layui-btn-container">
+
+
+           <!-- <button class="layui-btn layui-btn-sm" lay-event="accept">接受</button>-->
+            <button class="layui-btn layui-btn-sm" lay-event="complete"><i class="layui-icon layui-icon-ok"></i>完成</button>
+              <button class="layui-btn layui-btn-sm " lay-event=" "  onclick="location.reload()"><i class="layui-icon layui-icon-refresh-3"></i>刷新</button>
+        </div>
+    </script>
+    <script>
+        layui.use('table', function () {
+            var table = layui.table;
+            
+            //监听排序事件 
+            //table.on('sort(test)', function(obj){ //注：sort 是工具条事件名，test 是 table 原始容器的属性 lay-filter="对应的值"
+            //    $('td[data-field="files"]').click(function(){
+            //        var taskId=$(this).siblings('[data-field="ID"]').children('div').text()
+            //        var taskNum=$(this).siblings('[data-field="TaskNum"]').children('div').text()
+            //        layer.open({
+            //            type: 2,
+            //            area:['70%','70%'],
+            //            content: 'files.html',
+            //            success: function (layero, index) {
+                              
+            //                var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+            //                iframeWin.fun(taskId,taskNum,'图纸',false)
+
+            //            }
+            //        });
+            //    })
+
+            //    $('td[data-field="ProcessCardUploadTimeStr"]').click(function () {
+            //        var taskNum = $(this).siblings('[data-field="TaskNum"]').children('div').text()
+            //        var taskId = $(this).siblings('[data-field="ID"]').children('div').text()
+            //        layer.open({
+            //            type: 2,
+            //            area: ['70%', '70%'],
+            //            content: 'files.html',
+            //            success: function (layero, index) {
+
+            //                var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+            //                iframeWin.fun(taskId, taskNum, '工艺过程卡',true)
+
+            //            }
+            //        });
+            //    })
+
+
+            //    $('td[data-field="ProcessScheduleUpTimeStr"]').click(function () {
+            //        var taskNum = $(this).siblings('[data-field="TaskNum"]').children('div').text()
+            //        var taskId = $(this).siblings('[data-field="ID"]').children('div').text()
+            //        layer.open({
+            //            type: 2,
+            //            area: ['70%', '70%'],
+            //            content: 'files.html',
+            //            success: function (layero, index) {
+
+            //                var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+            //                iframeWin.fun(taskId, taskNum, '工艺进程单',true)
+
+            //            }
+            //        });
+            //    })
+
+
+
+            //    $('td[data-field="ProgramFileUploadTimeStr"]').click(function () {
+            //        var taskNum = $(this).siblings('[data-field="TaskNum"]').children('div').text()
+            //        var taskId = $(this).siblings('[data-field="ID"]').children('div').text()
+            //        layer.open({
+            //            type: 2,
+            //            area: ['70%', '70%'],
+            //            content: 'files.html',
+            //            success: function (layero, index) {
+
+            //                var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+            //                iframeWin.fun(taskId, taskNum, '编程文件',true)
+
+            //            }
+            //        });
+            //    })
+
+
+
+            //    $('td[data-field="ProcessFileUploadTimeStr"]').click(function () {
+            //        var taskNum = $(this).siblings('[data-field="TaskNum"]').children('div').text()
+            //        var taskId = $(this).siblings('[data-field="ID"]').children('div').text()
+            //        layer.open({
+            //            type: 2,
+            //            area: ['70%', '70%'],
+            //            content: 'files.html',
+            //            success: function (layero, index) {
+
+            //                var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+            //                iframeWin.fun(taskId, taskNum, '加工文件',true)
+
+            //            }
+            //        });
+            //    })
+
+
+
+            //    $('td[data-field="OtherFileTimeStr"]').click(function () {
+            //        var taskNum = $(this).siblings('[data-field="TaskNum"]').children('div').text()
+            //        var taskId = $(this).siblings('[data-field="ID"]').children('div').text()
+            //        layer.open({
+            //            type: 2,
+            //            area: ['70%', '70%'],
+            //            content: 'files.html',
+            //            success: function (layero, index) {
+
+            //                var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+            //                iframeWin.fun(taskId, taskNum, '其它文件',true)
+
+            //            }
+            //        });
+            //    })
+            //})
+            //第一个实例
+            table1 = table.render({
+                elem: '#demo'
+                 , toolbar: '#toolbarDemo' //开启头部工具栏，并为其绑定左侧模板
+                 , url: 'staffRead.ashx' //数据接口
+                 , page: true //开启分页
+                //,height:600
+                 , cols: [[ //表头
+                    {type: 'checkbox', fixed: 'left'},
+                    { field: 'ID', title: 'ID', hide:true},
+                      { field: 'Version', title: '版本号',hide:true },
+                     { field: 'DemandTimeStr', title: '计划时间',width:140 },
+                      { field: 'CompleteTimeStr', title: '完成时间', width: 140 },
+                         { field: 'TaskNum', title: '零件图号', width:100},
+                  
+                    { field: 'TaskName', title: '零件名称', width:100,templet: function (d) {return `<p style="color:blue">`+d.TaskName+`</p>` }},
+                     { field: 'ComponentNum', title: '产品型号', width:100},
+                      { field: 'ComponentName', title: '产品名称', width:100},
+                 
+                        { field: 'CreatTimeStr', title: '创建时间',hide: true,width:140 },
+                    { field: 'CreatPersonName', title: '创建人员',hide:true,width:90 },
+                   
+                    { field: 'CraftPersonName', title: '工艺责任人', width:105,hide:true},
+                     { field: 'CraftPersonID', title: '工艺责任人ID' ,hide:true},
+                    { field: 'ArrangeTaskTimeStr', title: '安排任务时间', hide: true,width:140},
+                        //{ field: 'AcceptTaskTimeStr', title: '接受任务时间', hide: true,},
+                 
+                        //{ field: 'PlanCompletionTimeStr', title: '预计完成时间', },
+                 { field: 'ProcessCardUploadTimeStr',width:140, title: '工装图纸',templet:function(d){return "<p style='color:blue'>"+d.ProcessCardUploadTimeStr+"</p>"}},
+                        //{ field: 'ProcessCardUploadPath', title: '工艺过程卡文件路径', hide: true },
+                 { field: 'ProcessScheduleUpTimeStr', width:140,title: '工艺过程卡', templet: function (d) { return "<p style='color:blue'>" + d.ProcessScheduleUpTimeStr + "</p>" } },
+                        //{ field: 'ProcessScheduleUploadPath',width:140, title: '工艺进程单文件路径', hide: true },
+                 { field: 'ProgramFileUploadTimeStr', width:140,title: '加工程序', templet: function (d) { return "<p style='color:blue'>" + d.ProgramFileUploadTimeStr+ "</p>" } },
+                        //{ field: 'ProgramFileUploadPath', title: '编程文件文件路径', hide: true },
+                 { field: 'ProcessFileUploadTimeStr',width:140, title: '刀具表', templet: function (d) { return "<p style='color:blue'>" + d.ProcessFileUploadTimeStr + "</p>" } },
+                        //{ field: 'ProcessFileUploadPath', title: '加工文件文件路径', hide: true },
+                 { field: 'OtherFileTimeStr', width:140,title: '工艺进程单', templet: function (d) { return "<p style='color:blue'>" + d.OtherFileTimeStr + "</p>" } },
+                        //{ field: 'OtherFilePath', title: '其他文件路径', hide: true },
+                   
+                    { field: 'StateStr', title: '任务状态',width:90,fixed:'right'},
+                  
+
+              ]],done:function(){
+                  var area= ['500px','350px'];
+                  $('td[data-field="TaskName"]').attr("title","点击查看图纸")
+                  $('td[data-field="ProcessCardUploadTimeStr"]').attr("title","点击查看工装图纸")
+                  $('td[data-field="ProcessScheduleUpTimeStr"]').attr("title","点击查看工艺过程卡")
+                  $('td[data-field="ProgramFileUploadTimeStr"]').attr("title","点击查看加工程序")
+                  $('td[data-field="ProcessFileUploadTimeStr"]').attr("title","点击查看刀具表")
+                  $('td[data-field="OtherFileTimeStr"]').attr("title","点击查看工艺进程单")
+                  var arr=$('td[data-field="StateStr"]')
+                  for (var i = 0; i < arr.length; i++) {
+                      if($(arr[i]).children('div').text()=="待完成"){
+                          $(arr[i]).css({'background-color':'orange','color':'white'})
+                      }else if($(arr[i]).children('div').text()=="已完成"){
+                          $(arr[i]).css({'background-color':'green','color':'white'})
+                      }
+                  }
+                  $('td[data-field="TaskName"]').click(function(){
+                      var taskId=$(this).siblings('[data-field="ID"]').children('div').text()
+                      var taskNum = $(this).siblings('[data-field="ComponentNum"]').children('div').text()+$(this).siblings('[data-field="TaskNum"]').children('div').text()//
+                      layer.open({
+                          type: 2,
+                          title:'图纸',
+                          area:area,
+                          content: 'files.html',
+                          success: function (layero, index) {
+                              
+                              var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                              iframeWin.fun(taskId,taskNum,'图纸',false)
+
+                          }
+                      });
+                  })
+
+                  $('td[data-field="ProcessCardUploadTimeStr"]').click(function () {
+                      var taskNum = $(this).siblings('[data-field="ComponentNum"]').children('div').text()+$(this).siblings('[data-field="TaskNum"]').children('div').text()//
+                      var taskId = $(this).siblings('[data-field="ID"]').children('div').text()
+                      layer.open({
+                          type: 2,
+                          title:'工装图纸',
+                          area:area,
+                          content: 'files.html',
+                          success: function (layero, index) {
+
+                              var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                              iframeWin.fun(taskId, taskNum, '工装图纸',true)
+
+                          }
+                      });
+                  })
+
+
+                  $('td[data-field="ProcessScheduleUpTimeStr"]').click(function () {
+                      var taskNum = $(this).siblings('[data-field="ComponentNum"]').children('div').text()+$(this).siblings('[data-field="TaskNum"]').children('div').text()//
+                      var taskId = $(this).siblings('[data-field="ID"]').children('div').text()
+                      layer.open({
+                          type: 2,
+                          title:'工艺过程卡',
+                          area:area,
+                          content: 'files.html',
+                          success: function (layero, index) {
+
+                              var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                              iframeWin.fun(taskId, taskNum, '工艺过程卡',true)
+
+                          }
+                      });
+                  })
+
+
+
+                  $('td[data-field="ProgramFileUploadTimeStr"]').click(function () {
+                      var taskNum = $(this).siblings('[data-field="ComponentNum"]').children('div').text()+$(this).siblings('[data-field="TaskNum"]').children('div').text()//
+                      var taskId = $(this).siblings('[data-field="ID"]').children('div').text()
+                      layer.open({
+                          type: 2,
+                          title:'加工程序',
+                          area:area,
+                          content: 'files.html',
+                          success: function (layero, index) {
+
+                              var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                              iframeWin.fun(taskId, taskNum, '加工程序',true)
+
+                          }
+                      });
+                  })
+
+
+
+                  $('td[data-field="ProcessFileUploadTimeStr"]').click(function () {
+                      var taskNum = $(this).siblings('[data-field="ComponentNum"]').children('div').text()+$(this).siblings('[data-field="TaskNum"]').children('div').text()//
+                      var taskId = $(this).siblings('[data-field="ID"]').children('div').text()
+                      layer.open({
+                          type: 2,
+                          title:'刀具表',
+                          area:area,
+                          content: 'files.html',
+                          success: function (layero, index) {
+
+                              var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                              iframeWin.fun(taskId, taskNum, '刀具表',true)
+
+                          }
+                      });
+                  })
+
+
+
+                  $('td[data-field="OtherFileTimeStr"]').click(function () {
+                      var taskNum = $(this).siblings('[data-field="ComponentNum"]').children('div').text()+$(this).siblings('[data-field="TaskNum"]').children('div').text()//
+                      var taskId = $(this).siblings('[data-field="ID"]').children('div').text()
+                      layer.open({
+                          type: 2,
+                          title:'工艺进程单',
+                          area:area,
+                          content: 'files.html',
+                          success: function (layero, index) {
+
+                              var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                              iframeWin.fun(taskId, taskNum, '工艺进程单',true)
+
+                          }
+                      });
+                  })
+
+              }
+                       });
+            //头工具栏事件
+            table.on('toolbar(test)', function (obj) {
+                var checkStatus = table.checkStatus(obj.config.id);
+                var data = checkStatus.data;
+                switch (obj.event) {
+      
+                    case 'accept':
+                        if (data.length == 0) {
+                            layer.alert("请先勾选");
+                            return;
+                        }
+                        layer.confirm("是否接受",function(){
+                            var ids="";
+                          
+                            for (var i = 0; i < data.length; i++) {
+                                ids+=data[i].ID+",";
+                             
+                            }
+                           
+                            $.ajax({
+                                url:'accept.ashx',
+                                type:'post',
+                                data:{ids:ids,},
+                                success:function(res){
+                                    if(res=='ok'){
+                                        layer.msg("接受成功",{icon:1,time:1000},function(){
+                                            table1.reload()
+                                        })
+                                    }else{
+                                        layer.alert(res)
+                                    }
+                                }
+                            })
+                        })
+                        console.log(data)
+                        break;
+                        //
+                    case 'complete':
+                        if (data.length == 0) {
+                            layer.alert("请先勾选");
+                            return;
+                        }
+                        layer.confirm("是否完成",function(){
+                            var ids="";
+                          
+                            for (var i = 0; i < data.length; i++) {
+                                ids+=data[i].ID+",";
+                             
+                            }
+                           
+                            $.ajax({
+                                url:'complete.ashx',
+                                type:'post',
+                                data:{ids:ids,},
+                                success:function(res){
+                                    if(res=='ok'){
+                                        layer.msg("完成成功",{icon:1,time:1000},function(){
+                                            table1.reload()
+                                        })
+                                    }else{
+                                        layer.alert(res)
+                                    }
+                                }
+                            })
+                        })
+                        console.log(data)
+                        break;
+                };
+            });
+        });
+    </script>
+</body>
+</html>

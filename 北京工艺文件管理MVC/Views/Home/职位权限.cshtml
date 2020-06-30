@@ -1,0 +1,224 @@
+﻿
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>Basic TreeGrid - jQuery EasyUI Demo</title>
+
+  <link href="/Resources/js/easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="/Resources/js/easyui/themes/icon.css" rel="stylesheet" />
+    <link href="/Resources/js/easyui/demo/demo.css" rel="stylesheet" />
+    <script src="/Resources/js/easyui/jquery.min.js"></script>
+    <script src="/Resources/js/easyui/jquery.easyui.min.js"></script>
+    
+   <link href="/Resources/js/layui-v2.5.4/layui/css/layui.css" rel="stylesheet" />
+    <script src="/Resources/js/layui-v2.5.4/layui/layui.js"></script>
+
+    
+</head>
+<body class="layui-layout-body">
+    <input id="cncId" hidden/>
+    <div class="layui-layout layui-layout-admin">
+      @*  <div class="layui-header" style="background-color:white;height:50px;border-bottom: solid 1px lightgray;">
+
+            <!-- 头部区域（可配合layui已有的水平导航） -->
+
+       
+
+        </div>*@
+
+        <div class="layui-side layui-bg-black" style="background-color:white;top:0">
+            <div class="layui-side-scroll" style="">
+                <!-- 左侧导航区域（可配合layui已有的垂直导航） -->
+               
+                <table id="tg" style="width:100%;height:100%;"></table>
+            </div>
+        </div>
+
+        <div class="layui-body" style="bottom:0;top:0">
+            <!-- 内容主体区域 -->
+            <div style="padding-left:10px;">
+               
+                <table id="table1" lay-filter="filter1"></table>
+            </div>
+        </div>
+
+        
+    </div>
+
+    <script type="text/html" id="toolbarDemo">
+        
+       <div class="layui-btn-container">
+    <button class="layui-btn layui-btn-sm" lay-event="create">新建</button>
+  
+  </div>
+    </script>
+    <script type="text/html" id="barDemo">
+  <a class="layui-btn layui-btn-xs" lay-event="edit">编辑</a>
+  <a class="layui-btn layui-btn-danger layui-btn-xs" lay-event="del">删除</a>
+</script>
+    <script>
+
+   
+   
+    $('#tg').treegrid({
+        url: '/Emmployee/GetAllDepartmentMethod',
+        idField: 'id',
+        animate: true,
+        treeField: 'staff',
+        method: 'get',
+        rownumbers: true,
+
+        columns: [[
+            { title: '部门', field: 'staff', width: '100%' },
+
+            //{ field: 'id', title: 'id', width: 80, hidden: true },
+
+        ]],
+        onLoadSuccess: function (data) {
+             $('td').css('border', 'none')
+                        $('.tree-folder.tree-folder-open').removeClass('tree-folder tree-folder-open')
+                    $('.tree-icon').removeClass('tree-icon tree-file')
+            $(".datagrid-header").find("span").css('font-size','130%')
+            $(".panel-body").css({ 'background-color': 'white', 'border-color': 'white' });
+             
+
+
+
+                
+            $('tr')[1].click();
+
+                $('[node-id="67"]').find('[field="action"]').hide()
+
+
+            
+                $(".datagrid-view1").remove()
+
+        }
+        , onClickRow: function (row) {
+            department = row.staff
+            departmentId=row.id
+           layui.use(['table', 'laypage'], function () {
+                var table = layui.table, $ = layui.$, laypage = layui.laypage;
+
+                //第一个实例
+                table1 = table.render({
+                    elem: '#table1'
+                    ,method:'post'
+                    , url: '/Emmployee/GetPositionOfDepartment' //数据接口
+                    , where: { parentID: row.id }
+                   // , page: true //开启分页
+                   // , limit: 90
+                    , toolbar: '#toolbarDemo'
+                    , cols: [[ //表头
+
+                        { field: 'positionName', title: '职位', }
+
+                        , { field: '', title: '操作', toolbar:"#barDemo"}
+
+
+
+
+
+                    ]],//
+                    done: function (dd) {
+                        $(".layui-table-view").css('margin', 0)
+
+
+
+                    }
+                });
+               //头工具栏事件
+                table.on('toolbar(filter1)', function (obj) {
+
+                    switch (obj.event) {
+                        case 'create':
+
+                            layer.open({
+                                type: 2,
+                                area: ['500px', '400px'],
+                                content: '/View/人员管理/添加职位.html',
+                                cancel: function (index, layero) {
+
+                                    layer.close(index); //再执行关闭   
+                                    tgreload()
+                                    return false;
+                                },
+
+                                success: function (layero, index) {
+                                    var iframeWin = window[layero.find('iframe')[0]['name']];
+                                    iframeWin.fun(department, departmentId)
+                                }
+                            })
+                            break;
+
+                    };
+                });
+
+               //监听行工具事件
+                table.on('tool(filter1)', function (obj) {
+                    var data = obj.data;
+                    //console.log(obj)
+                    if (obj.event === 'del') {
+                        layer.confirm('是否删除？', function (index) {
+                            $.ajax({
+                                url: '/Emmployee/DeletePositionMethod',
+                                type: 'post',
+                                data: { positionId: data.id },
+                                success: function (res) {
+                                    if(res=="ok"){
+                                        layer.msg("删除成功",{icon:1,time:1000}, function () {
+                                            tgreload()
+                                        })
+                                    }else{
+                                    layer.alert(res)
+                                          }
+                                }
+                            })
+                            layer.close(index);
+                        });
+                    } else if (obj.event === 'edit') {
+                     
+                        layer.open({
+                            type: 2,
+                            area: ['500px', '500px'],
+                            content: '/Home/修改职位弹窗',
+                            success: function (layero, index) {
+                                var iframeWin = window[layero.find('iframe')[0]['name']];
+                                iframeWin.fun(data.positionName, data.id)
+                            }
+                        })
+                    }
+                });
+            });
+        }
+        });
+        $(function () {
+
+            $('#create').click(function () {
+                layer.open({
+                    type: 2,
+                    area: ['50%', '85%'],
+                    fixed: false, //不固定
+                    maxmin: true,
+                    content: '位置管理创建弹窗.html',
+                    success: function (layero, index) {
+                        var body = layer.getChildFrame('body', index);
+                        var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                        console.log(body.html()) //得到iframe页的body内容
+                        //body.find('input').val('Hi，我是从父页来的')
+                        body.find('#brand').val(brand)
+                        body.find('#number').val(number)
+                        body.find('#ip').val(ip)
+                        body.find('#model').val(model)
+                    }
+                });
+            })
+        })
+
+        function tgreload() {
+            table1.reload()
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,302 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using 北京工艺文件管理MVC.Database;
+
+namespace 北京工艺文件管理MVC.Models
+{
+    public class TaskInfoManage
+    {
+        /// <summary>
+        /// 根据父节点获取零件信息
+        /// </summary>
+        /// <param name="parentID">父节点主键ID</param>
+        /// <param name="orderNum">父节点的任务号</param>
+        /// <returns></returns>
+        public static List<CompontInfo> GetPartTaskInfo(int parentID, string orderNum)
+        {
+            try
+            {
+                List<CompontInfo> taskInfos = new List<CompontInfo>();
+                using (Model1 model = new Model1())
+                {
+                    var tasks = model.JDJS_PDMS_TaskInfo_Table.Where(r => r.ComponentID == parentID && r.state == "正常");
+                    foreach (var item in tasks)
+                    {
+                        CompontInfo task = new CompontInfo();
+                        task.componentID = parentID;
+                        task.acceptTaskTime = item.AcceptTaskTime == null ? DateTime.Now : Convert.ToDateTime(item.AcceptTaskTime);
+                        task.acceptTaskTimeStr = item.AcceptTaskTime == null ? "" : item.AcceptTaskTime.ToString().Substring(0, item.AcceptTaskTime.ToString().LastIndexOf(':'));
+                        task.arrangeTaskTime = item.ArrangeTaskTime == null ? DateTime.Now : Convert.ToDateTime(item.ArrangeTaskTime);
+                        task.arrangeTaskTimeStr = item.ArrangeTaskTime == null ? "" : item.ArrangeTaskTime.ToString().Substring(0, item.ArrangeTaskTime.ToString().LastIndexOf(':'));
+                        task.completeTime = item.CompleteTime == null ? DateTime.Now : Convert.ToDateTime(item.CompleteTime);
+                        task.completeTimeStr = item.CompleteTime == null ? "" : item.CompleteTime.ToString().Substring(0, item.CompleteTime.ToString().LastIndexOf(':'));
+                        task.craftPersonID = item.CraftPersonID == null ? 0 : Convert.ToInt32(item.CraftPersonID);
+                        task.craftPersonName = "";
+                        if (item.CraftPersonID != null)
+                        {
+                            var staff = model.JDJS_PDMS_Staff_Table.Where(r => r.ID == item.CraftPersonID && r.state == "正常").FirstOrDefault();
+                            if (staff != null)
+                            {
+                                task.craftPersonName = staff.StaffName;
+                            }
+                        }
+                        task.creatPersonID = item.CreatPersonID == null ? 0 : Convert.ToInt32(item.CreatPersonID);
+                        task.creatPersonName = "";
+                        if (item.CreatPersonID != null)
+                        {
+                            var staff = model.JDJS_PDMS_Staff_Table.Where(r => r.ID == item.CreatPersonID && r.state == "正常").FirstOrDefault();
+                            if (staff != null)
+                            {
+                                task.creatPersonName = staff.StaffName;
+                            }
+                        }
+                        task.creatTime = item.CreatTime == null ? DateTime.Now : Convert.ToDateTime(item.CreatTime);
+                        task.creatTimeStr = item.CreatTime == null ? "" : item.CreatTime.ToString().Substring(0, item.CreatTime.ToString().LastIndexOf(':'));
+                        task.demandTime = item.DemandTime == null ? DateTime.Now : Convert.ToDateTime(item.DemandTime);
+                        task.demandTimeStr = item.DemandTime == null ? "" : item.DemandTime.ToString().Substring(0, item.DemandTime.ToString().LastIndexOf(':'));
+                        task.id = item.ID;
+                        task.lastAlterPersonID = item.LastAlterPersonID == null ? 0 : Convert.ToInt32(item.LastAlterPersonID);
+                        task.lastAlterPersonName = "";
+                        if (item.LastAlterPersonID != null)
+                        {
+                            var staff = model.JDJS_PDMS_Staff_Table.Where(r => r.ID == item.LastAlterPersonID && r.state == "正常").FirstOrDefault();
+                            if (staff != null)
+                            {
+                                task.lastAlterPersonName = staff.StaffName;
+                            }
+                        }
+                        task.lastAlterTime = item.LastAlterTime == null ? DateTime.Now : Convert.ToDateTime(item.LastAlterTime);
+                        task.lastAlterTimeStr = item.LastAlterTime == null ? "" : item.LastAlterTime.ToString().Substring(item.LastAlterTime.ToString().LastIndexOf(':'));
+                        task.allConponentNum = orderNum + item.TaskNum;
+                        task.otherFilePath = item.OtherFilePath == null ? "" : item.OtherFilePath;
+                        task.otherFileTime = item.OtherFileTime == null ? DateTime.Now : Convert.ToDateTime(item.OtherFileTime);
+                        task.otherFileTimeStr = item.OtherFileTime == null ? "" : item.OtherFileTime.ToString().Substring(0, item.OtherFileTime.ToString().LastIndexOf(':'));
+                        task.planCompletionTime = item.PlanCompletionTime == null ? DateTime.Now : Convert.ToDateTime(item.PlanCompletionTime);
+                        task.planCompletionTimeStr = item.PlanCompletionTime == null ? "" : item.PlanCompletionTime.ToString().Substring(0, item.PlanCompletionTime.ToString().LastIndexOf(':'));
+                        task.planEndTime = item.PlanEndTime == null ? DateTime.Now : Convert.ToDateTime(item.PlanEndTime);
+                        task.planEndTimeStr = item.PlanEndTime == null ? "" : item.PlanEndTime.ToString().Substring(0, item.PlanEndTime.ToString().LastIndexOf(':'));
+                        task.planStartTime = item.PlanStartTime == null ? DateTime.Now : Convert.ToDateTime(item.PlanStartTime);
+                        task.planStartTimeStr = item.PlanStartTime == null ? "" : item.PlanStartTime.ToString().Substring(0, item.PlanStartTime.ToString().LastIndexOf(':'));
+                        task.processCardUploadPath = item.ProcessCardUploadPath == null ? "" : item.ProcessCardUploadPath;
+                        task.processCardUploadTime = item.ProcessCardUploadTime == null ? DateTime.Now : Convert.ToDateTime(item.ProcessCardUploadTime);
+                        task.processCardUploadTimeStr = item.ProcessCardUploadTime == null ? "" : item.ProcessCardUploadTime.ToString().Substring(0, item.ProcessCardUploadTime.ToString().LastIndexOf(':'));
+                        task.processFileUploadPath = item.ProcessFileUploadPath == null ? "" : item.ProcessFileUploadPath;
+                        task.processFileUploadTime = item.ProcessFileUploadTime == null ? DateTime.Now : Convert.ToDateTime(item.ProcessFileUploadTime);
+                        task.processFileUploadTimeStr = item.ProcessFileUploadTime == null ? "" : item.ProcessFileUploadTime.ToString().Substring(0, item.ProcessFileUploadTime.ToString().LastIndexOf(':'));
+                        task.processScheduleUpPath = item.ProcessScheduleUpPath == null ? "" : item.ProcessScheduleUpPath;
+                        task.processScheduleUpTime = item.ProcessScheduleUpTime == null ? DateTime.Now : Convert.ToDateTime(item.ProcessScheduleUpTime);
+                        task.processScheduleUpTimeStr = item.ProcessScheduleUpTime == null ? "" : item.ProcessScheduleUpTime.ToString().Substring(0, item.ProcessScheduleUpTime.ToString().LastIndexOf(':'));
+                        task.programFileUploadPath = item.ProgramFileUploadPath == null ? "" : item.ProgramFileUploadPath;
+                        task.programFileUploadTime = item.ProgramFileUploadTime == null ? DateTime.Now : Convert.ToDateTime(item.ProgramFileUploadTime);
+                        task.programFileUploadTimeStr = item.ProgramFileUploadTime == null ? "" : item.ProgramFileUploadTime.ToString().Substring(0, item.ProgramFileUploadTime.ToString().LastIndexOf(':'));
+                        task.staffID = item.staffID == null ? 0 : Convert.ToInt32(item.staffID);
+                        task.staffName = "";
+                        if (item.staffID != null)
+                        {
+                            var staff = model.JDJS_PDMS_Staff_Table.Where(r => r.ID == item.staffID && r.state == "正常").FirstOrDefault();
+                            if (staff != null)
+                            {
+                                task.staffName = staff.StaffName;
+                            }
+                        }
+                        task.state = item.state;
+                        task.taskName = item.TaskName;
+                        task.taskNum = item.TaskNum;
+                        task.taskState = item.TaskState == null ? 0 : Convert.ToInt32(item.TaskState);
+                        task.version = item.Version == null ? 0 : Convert.ToInt32(item.Version);
+                        switch (task.taskState)
+                        {
+                            case 0:
+                                task.taskStateStr = "待完成";
+                                break;
+                            case 1:
+                                task.taskStateStr = "待完成";
+                                break;
+                            case 2:
+                                task.taskStateStr = "待完成";
+                                break;
+                            case 3:
+                                task.taskStateStr = "待完成";
+                                break;
+                            case 4:
+                                task.taskStateStr = "已完成";
+                                break;
+                            case 5:
+                                break;
+                            case 6:
+                                break;
+                            case 7:
+                                break;
+                            case 8:
+                                break;
+                            default:
+                                break;
+
+                        }
+                        task.previewCategory = new List<int>();
+                        var types = model.JDJS_PDMS_Task_ProcessType_Table.Where(r => r.TaskID == item.ID && r.state == "正常");
+                        foreach (var type in types)
+                        {
+                            task.previewCategory.Add(Convert.ToInt32(type.CategoryTypeID));
+                        }
+                        task.ispart = true;
+                        task.previewCategoryStr = "";
+                        foreach (var type in task.previewCategory)
+                        {
+                            var jd = model.JDJS_PDMS_Task_Preview_Category_Table.Where(r => r.ID == type && r.state == "正常").FirstOrDefault();
+                            if (jd != null)
+                            {
+                                task.previewCategoryStr += jd.ProcessingType + ",";
+                            }
+                        }
+                        if (task.previewCategoryStr.Length > 0)
+                        {
+                            task.previewCategoryStr = task.previewCategoryStr.Substring(0, task.previewCategoryStr.Length - 1);
+                        }
+
+
+                        taskInfos.Add(task);
+
+
+                    }
+                }
+                return taskInfos;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+
+        }
+
+        /// <summary>
+        /// 创建零件
+        /// </summary>
+        /// <param name="parent">父节点</param>
+        /// <param name="taskName">零件名称</param>
+        /// <param name="taskNum">零件图号</param>
+        /// <param name="creatPersonID">创建人</param>
+        /// <param name="planStartTime">计划开始时间</param>
+        /// <param name="planEndTime">计划结束时间</param>
+        /// <param name="craftPersonID">工艺责任人</param>
+        /// <param name="previewCategory">预览组别</param>
+        /// <param name="errMsg">错误信息</param>
+        /// <returns>是否成功</returns>
+        public static bool AddTask(int parent, string taskName, string taskNum, int creatPersonID, DateTime planStartTime, DateTime planEndTime, int craftPersonID, List<int> previewCategory, ref string errMsg)
+        {
+            try
+            {
+                using (Model1 model = new Model1())
+                {
+                    using (System.Data.Entity.DbContextTransaction mytran = model.Database.BeginTransaction())
+                    {
+                        try
+                        {
+                            var task = model.JDJS_PDMS_TaskInfo_Table.Where(r => r.ComponentID == parent && r.TaskNum == taskNum && r.state == "正常");
+                            if (task.Count() > 0)
+                            {
+                                mytran.Rollback();
+                                errMsg = "该零件图号已存在，请重新输入！";
+                                return false;
+                            }
+                            JDJS_PDMS_TaskInfo_Table jd = new JDJS_PDMS_TaskInfo_Table()
+                            {
+                                ArrangeTaskTime = DateTime.Now,
+                                ComponentID = parent,
+                                CraftPersonID = craftPersonID,
+                                CreatPersonID = creatPersonID,
+                                CreatTime = DateTime.Now,
+                                DemandTime = planEndTime,
+                                LastAlterPersonID = creatPersonID,
+                                LastAlterTime = DateTime.Now,
+                                PlanCompletionTime = planEndTime,
+                                PlanEndTime = planEndTime,
+                                PlanStartTime = planStartTime,
+                                staffID = creatPersonID,
+                                state = "正常",
+                                TaskName = taskName,
+                                TaskNum = taskNum,
+                                Version = 0,
+                                TaskState = 1
+
+                            };
+                            model.JDJS_PDMS_TaskInfo_Table.Add(jd);
+                            var jdID = jd.ID;
+                            foreach (var item in previewCategory)
+                            {
+                                JDJS_PDMS_Task_ProcessType_Table type = new JDJS_PDMS_Task_ProcessType_Table()
+                                {
+                                    CategoryTypeID =item,CreatPersonID =creatPersonID ,
+                                    CreatTime =DateTime .Now ,
+                                    LastAlterPersonID =creatPersonID ,
+                                    LastAlterTime =DateTime .Now ,
+                                    state ="正常",
+                                    TaskID =jdID 
+
+                                };
+                                model.JDJS_PDMS_Task_ProcessType_Table.Add(type);
+                            }
+                            model.SaveChanges();
+                            mytran.Commit();
+                            errMsg = "ok";
+                            return true;
+                        }
+                        catch (Exception ex)
+                        {
+                            mytran.Rollback();
+                            errMsg = ex.Message;
+                            return false;
+                        }
+                    }
+
+                }
+            }
+            catch (Exception ex)
+            {
+                errMsg = ex.Message;
+                return false;
+            }
+        }
+        /// <summary>
+        /// 获取所有的组别
+        /// </summary>
+        /// <returns></returns>
+        public static List<PreviewCategoryInfo> GetPreviewCategory()
+        {
+            try
+            {
+                List<PreviewCategoryInfo> previewCategoryInfoList = new List<PreviewCategoryInfo>();
+                using (Model1 model = new Model1())
+                {
+                    var category = model.JDJS_PDMS_Task_Preview_Category_Table.Where(r => r.state == "正常");
+                    foreach (var item in category)
+                    {
+                        PreviewCategoryInfo cat = new PreviewCategoryInfo();
+                        cat.id = item.ID;
+                        cat.Name = item.ProcessingType;
+                        previewCategoryInfoList.Add(cat);
+                    }
+                }
+                return previewCategoryInfoList;
+            }
+            catch (Exception ex)
+            {
+                return null;
+            }
+        }
+    }
+
+    public class PreviewCategoryInfo
+    {
+        /// <summary>
+        /// 主键ID
+        /// </summary>
+        public int id;
+        /// <summary>
+        /// 组别名称
+        /// </summary>
+        public string Name;
+    }
+}

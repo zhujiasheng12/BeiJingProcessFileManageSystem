@@ -1,0 +1,71 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+    <title></title>
+     <link href="/Resources/js/easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="/Resources/js/easyui/themes/icon.css" rel="stylesheet" />
+    <link href="/Resources/js/easyui/demo/demo.css" rel="stylesheet" />
+    <script src="/Resources/js/easyui/jquery.min.js"></script>
+    <script src="/Resources/js/easyui/jquery.easyui.min.js"></script>
+    
+   <link href="/Resources/js/layui-v2.5.4/layui/css/layui.css" rel="stylesheet" />
+    <script src="/Resources/js/layui-v2.5.4/layui/layui.js"></script>
+</head>
+<body style="padding:20px">
+    <input id="cc"/>
+    <input type="button" class="layui-btn layui-btn-sm" value="提交" onclick="submit()" style="margin-left:80px;margin-top:20px"/>
+    <script>
+        layui.use('layer',function(){layer.layui.layer})
+        function fun(ids1) {
+            ids=ids1
+        }
+        $(function () {
+            $('#cc').combotreegrid({
+                value: '',
+                width: '100%',
+                panelWidth: 500,
+                label: '请选择：',
+                labelPosition: 'left',
+                url: '../人员管理/staffRead.ashx',
+                idField: 'id',
+                treeField: 'staff',
+                columns: [[
+                    { field: 'staff', title: '姓名', width: '100%' },
+                   
+                    { field: 'id', title: 'id', width: 100,hidden:true }
+                ]],
+                onLoadSuccess: function () {
+                    $('.tree-icon.tree-file').removeClass('tree-file')
+                    $('.tree-icon.tree-folder').removeClass('tree-folder')
+                }
+            });
+        });
+        function submit() {
+            if ($("#cc").val() == "") {
+                layer.alert("请先选择！");
+                return;
+            }
+            layer.confirm("是否提交", function (index) {
+                $.ajax({
+                    url: "distribution.ashx",
+                    type: 'post',
+                    data: { ids: ids, staffId: $("#cc").val() },
+                    success: function (res) {
+                        if (res == 'ok') {
+                            layer.msg("提交成功", { icon: 1, time: 1000 }, function () {
+                                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                parent.layer.close(index); //再执行关闭    
+                                parent.table1.reload()
+                            })
+                        } else {
+                            layer.alert(res)
+                        }
+                    }
+                })
+            })
+           
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,238 @@
+﻿<!DOCTYPE html>
+<html style="height:100%">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link href="/Resources/js/easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="/Resources/js/easyui/themes/icon.css" rel="stylesheet" />
+    <link href="/Resources/js/easyui/demo/demo.css" rel="stylesheet" />
+    <script src="/Resources/js/easyui/jquery.min.js"></script>
+    <script src="/Resources/js/easyui/jquery.easyui.min.js"></script>
+    
+   <link href="/Resources/js/layui-v2.5.4/layui/css/layui.css" rel="stylesheet" />
+    <script src="/Resources/js/layui-v2.5.4/layui/layui.js"></script>
+</head>
+<body style="height:100%">
+    <div class="layui-row" style="height:100%">
+        <div class="layui-col-md12">
+            <form class="layui-form" action="">
+                <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                    <legend>人员</legend>
+                </fieldset>
+               <!-- <div class="layui-form-item">
+                    <label class="layui-form-label"style="width:100px">部门<span style="color:red">*</span></label>
+                    <div class="layui-input-block">
+                        <input type="text" name="father" required lay-verify="required" placeholder="必填项" autocomplete="off" class="layui-input" readonly>
+                    </div>
+                </div>-->
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label"style="width:100px">人员<span style="color:red">*</span></label>
+                    <div class="layui-input-block">
+                        <input type="text" name="staffName" required lay-verify="required" placeholder="必填项" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label"style="width:100px">职位<span style="color:red">*</span></label>
+                    <div class="layui-input-block">
+                       <input type="text" name="position" required lay-verify="" placeholder="" autocomplete="off" class="layui-input" readonly>
+                    </div>
+                </div>
+
+
+                 <div class="layui-form-item" style="margin-right:15px">
+    <label class="layui-form-label"style="width:120px">预览组别</label>
+    <div class="layui-input-block" id="checkbox" style="margin-left:120px">
+     
+    </div>
+  </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label"style="width:100px">电话</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="tel" required placeholder="选填项" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label"style="width:100px">登录账户<span style="color:red">*</span></label>
+                    <div class="layui-input-block">
+                        <input type="text" name="userName" required placeholder="选填项" autocomplete="off" class="layui-input" lay-verify="required">
+                    </div>
+                </div>
+
+                <div class="layui-form-item">
+        <label class="layui-form-label" style="width:100px">登录密码<span style="color:red">*</span></label>
+        <div class="layui-input-block">
+            <input type="text" name="passWord" required  placeholder="请输入标题" autocomplete="off" class="layui-input">
+        </div>
+    </div>
+
+                <div class="layui-form-item">
+                    <label class="layui-form-label"style="width:100px">邮箱</label>
+                    <div class="layui-input-block">
+                        <input type="text" name="mailBox" required placeholder="选填项" autocomplete="off" class="layui-input">
+                    </div>
+                </div>
+                <div style="margin-left:20px"> <div id="tree" ></div></div>
+                
+                <div class="layui-form-item"style="text-align:center">
+                    <div class="layui-input-block"style="margin-left:0">
+                        <button class="layui-btn" lay-submit lay-filter="*">立即提交</button>
+
+                    </div>
+                </div>
+            </form>
+        </div>
+       <!-- <div class="layui-col-md6" style="height:100%">
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                <legend>权限</legend>
+            </fieldset>
+            <ul id="tree" style="width:100%;height:100%" >
+
+            </ul>
+        </div>-->
+        </div>
+    
+    <script>
+  
+    </script>
+  
+ 
+    <script>
+        function fun(staff1, id1) {
+          
+            staff = staff1;
+            id = id1;
+         
+            //$.ajax({
+            //    url: '/Emmployee/GetPositionOfDepartment',
+            //    type: 'post',
+            //    data: { parentID: id },
+            //    success: function (res) {
+                  
+            //        res = res.data
+            //        for (var i = 0; i < res.length; i++) {
+            //            $('select').append('<option value="' + res[i].id + '">' + res[i].positionName + '</option>')
+            //        }
+            //        layui.use('form', function () { layui.form.render() })
+            //    }
+            //})
+
+            $.ajax({
+                url: '/Emmployee/GetEmployeeInfoMethod',
+                type: 'post',
+                data: { staffId: id },
+                success: function (res) {
+                    
+                    $('[name="staffName"]').val(res.staff)
+                    $('[name="position"]').val(res.position)
+                    $('[name="tel"]').val(res.tel)
+                    $('[name="userName"]').val(res.users)
+                    $('[name="mailBox"]').val(res.mailbox)
+                    $('[name="passWord"]').val(res.passWord)
+                   processTypeId = res.processTypeId
+                    $.ajax({
+                        url: '/Task/GetAllPreviewCategory',
+                        type: 'post',
+                        success: function (res) {
+                            arr = res;
+                            for (var i = 0; i < res.length; i++) {
+                                if (processTypeId == res[i].id) {
+                                    $("#checkbox").append(' <input checked type="radio" name="processTypeId" value="' + res[i].id + '" title="' + res[i].Name + '">')
+                                } else {
+                                    $("#checkbox").append(' <input  type="radio" name="processTypeId" value="' + res[i].id + '" title="' + res[i].Name + '">')
+                                }
+                              
+                            }
+                            layui.use('form', function () { layui.form.render() })
+                        }
+                    })
+
+                    $('#tree').treegrid({
+                        //url: 'limitCreate.json',
+                        idField: 'id',
+                        treeField: 'authorityName',
+                        method: 'get',
+                        checkbox: true,
+                       // animate: true,
+                        columns: [[
+                            { title: '权限', field: 'authorityName', width: '100%' },
+                            { title: 'id', field: 'id', width: 180, hidden: true },//enabled
+                             { title: 'enabled', field: 'enabled', width: 180, hidden: true },//
+                        ]],
+                        data: res.authority
+                       , onLoadSuccess: function () {
+                         
+                           $('.tree-folder.tree-folder-open').removeClass('tree-folder tree-folder-open')
+                           $('.tree-icon').removeClass('tree-icon tree-file')
+                           $('.tree-folder').removeClass('tree-folder')
+                            $('td').css('border', 'none')
+                            $('.panel-body').css('border-color', 'white')
+                           //$('#tree').tree('select', $('#_easyui_tree_2'))
+
+                           
+                            var arr = $('[field="enabled"]');
+                            for (var i = 0; i < arr.length; i++) {
+                                if ($(arr[i]).children('div').text() == "false") {
+                                    $(arr[i]).siblings('[field="authorityName"]').find('.tree-checkbox').remove()
+                                }
+                            }
+                        }
+                    })
+                }
+
+            })
+
+        }
+
+        layui.use('form', function () {
+            var form = layui.form, layer = layui.layer;
+            form.on('submit(*)', function (data) {
+                
+
+            
+                layer.confirm("是否提交", function (index) {
+                    var nodes = $('.tree-checkbox1,.tree-checkbox2').parent('div').parent('[field="authorityName"]').siblings('[field="id"]')
+                    var limit = "";
+                    debugger
+                    if (nodes.length == 0) {
+
+                    }
+                    else {
+                        for (var i = 0; i < nodes.length; i++) {
+                            limit += nodes[i].children[0].innerText + ',';
+                        }
+                    }
+                    data.field.limlt = limit
+                    data.field.staffId = id;
+
+                    debugger
+                    $.ajax({
+                        url: '/Emmployee/AlterStaffInfoMethod',
+                        type: 'POST',
+
+                        data: data.field,
+                        success: function (d) {
+                            if (d == "ok") {
+                                var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                parent.layer.close(index); //再执行关闭   
+                                parent.tgreload()
+                           
+                            }
+                            else {
+                                layer.alert(d)
+                            }
+                        }
+
+                    })
+                    layer.close(index)
+                })
+                return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+            });
+        })
+
+    </script>
+</body>
+</html>

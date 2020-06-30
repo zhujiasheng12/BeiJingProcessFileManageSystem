@@ -1,0 +1,46 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using 北京工艺文件管理MVC.Models;
+
+namespace 北京工艺文件管理MVC.Controllers
+{
+    public class CraftDesignController : Controller
+    {
+        //
+        // GET: /CraftDesign/
+
+        public ActionResult Index()
+        {
+            return View();
+        }
+
+        /// <summary>
+        /// 根据登录人员获取该人员负责的零件任务
+        /// </summary>
+        /// <returns></returns>
+        public ActionResult GetTaskInfoByCraftPerson()
+        {
+            try
+            {
+                int craftPersonID =-1;
+                if (int.TryParse(Session["id"].ToString(), out craftPersonID))
+                {
+                    var list = CraftDesignInfoManage.GetTaskInfoByCreaftPerson(0, "", craftPersonID);
+                    return Json(list, JsonRequestBehavior.AllowGet);
+                }
+                else
+                {
+                    return Content("系统异常");
+                }
+            }
+            catch (Exception ex)
+            { 
+            return Content(ex.Message );
+            }
+        }
+
+    }
+}

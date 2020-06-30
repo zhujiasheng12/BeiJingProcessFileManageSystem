@@ -1,0 +1,432 @@
+﻿<!DOCTYPE html>
+<html style="height:100%">
+<head>
+    <meta charset="UTF-8">
+    <title>Basic TreeGrid - jQuery EasyUI Demo</title>
+
+    <link href="/Resources/js/easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="/Resources/js/easyui/themes/icon.css" rel="stylesheet" />
+    <link href="/Resources/js/easyui/demo/demo.css" rel="stylesheet" />
+    <script src="/Resources/js/easyui/jquery.min.js"></script>
+    <script src="/Resources/js/easyui/jquery.easyui.min.js"></script>
+    
+   <link href="/Resources/js/layui-v2.5.4/layui/css/layui.css" rel="stylesheet" />
+    <script src="/Resources/js/layui-v2.5.4/layui/layui.js"></script>
+    
+
+
+</head>
+<body style="height:100%;padding:10px">
+  	<div id="mm" class="easyui-menu" style="width:120px;">
+		<div onclick="append()"@* data-options="iconCls:'icon-add'"*@><i class="layui-icon layui-icon-add-circle-fine" style="font-size: 20px; color:green;font-weight:bold"></i>   添加</div>
+		<div onclick="edit()" @*data-options="iconCls:'icon-edit'"*@><i class="layui-icon layui-icon-edit" style="font-size: 20px; color:orange"></i> 修改</div>
+          <div onclick="removeIt()" @*data-options="iconCls:'icon-remove'"*@><i class="layui-icon layui-icon-delete" style="font-size: 20px; color:red"></i> 删除</div>
+		<!--<div class="menu-sep"></div>-->
+	<!--	<div onclick="collapse()">收启</div>
+		<div onclick="expand()">展开</div>-->
+	</div>
+   <button class="layui-btn layui-btn-sm" style="margin-bottom:10px" onclick="create()">创建</button>
+    <button class="layui-btn layui-btn-sm" style="float:right" onclick ="location.reload()">刷新</button>
+      <div class=" layui-form layui-input-inline" style="float: right">
+            <select lay-search lay-filter="search">
+                <option value="">选中后搜索...</option>
+
+            </select>
+        </div>
+  
+    
+    <table id="tg" style="height:100%"></table>
+    <script>
+
+        $('#tg').treegrid({
+
+
+            //collapsible: true,
+            //fitColumns: true,
+          url: '/Task/GetTaskInfo',
+            idField: 'allConponentNum',
+           animate: true,
+            treeField: 'taskName',
+            method: 'get',
+           // rownumbers: true,
+           //checkbox: true,
+            columns: [[
+                { title: '名称', field: 'taskName',width:'12.5%'},
+                {
+                    title: '代号/图号', field: 'taskNum', width: '12.5%', formatter: function (value, row, index) {
+                        if (row.ispart) {
+                            return '<p style="color:blue">' + (value == null ? "" : value) + '</p>';
+                        } else {
+                            return value;
+                        }
+                       
+                    }
+                },
+                //{ title: '唯一识别码', field: 'allConponentNum', width: '12.5%' ,},
+                { title: '工艺规划人', field: 'craftPersonName', width: '12.5%' },
+                { title: '预览组别', field: 'previewCategoryStr', width: '12.5%' },
+                { title: '计划开始时间', field: 'planStartTimeStr', width: '12.5%' },
+                { title: '计划完成时间', field: 'planEndTimeStr', width: '12.5%' },
+                { title: '实际开始时间', field: 'acceptTaskTimeStr', width: '12.5%' },
+                { title: '实际完成时间', field: 'completeTimeStr', width: '12.5%' },
+              { field: 'ispart', title: 'ispart', hidden: true },
+              
+              // { field: 'id', title: 'id', }, 
+     
+            ]]
+            //,
+            //data: [{ taskName: 11,allConponentNum:'1.1.' }]
+            ,onLoadSuccess: function (data) {
+             
+                $('.tree-folder.tree-folder-open').removeClass('tree-folder tree-folder-open')
+                $('.tree-icon').removeClass('tree-icon tree-file')
+                //$(".datagrid-view1").remove()
+                //$(".datagrid-view2").css('left', '0')
+             
+                $('.panel-body').css('border-color', 'white')
+
+
+           
+                var arr = $('td[field="taskName"]')
+                for (var i = 0; i < arr.length; i++) {
+                    var ispart = $(arr[i]).siblings('[field="ispart"]').children().text();
+                
+                    if (ispart == "false") {
+                        $(arr[i]).css('font-weight', 'bold')
+                    }
+                }
+                //$.ajax({
+                //    url: '../刀具管理/Jurisdiction.ashx', success: function (d) {
+                //        var obj = JSON.parse(d)
+                //        var limit = obj.Limit
+                //        for (var i = 0; i < limit.length; i++) {
+                //            if (limit[i] == "操作") {
+                //                $('td[field="action"]').remove()
+                //            }
+                //        }
+                //    }
+
+                //})
+
+            }
+           , onContextMenu: function (e, row) {
+               
+               componentID = row.componentID
+               id = row.id
+               taskName = row.taskName
+               taskNum = row.taskNum
+               planStartTimeStr = row.planStartTimeStr
+               planEndTimeStr = row.planEndTimeStr
+            
+               previewCategoryStr = row.previewCategoryStr
+              
+               allConponentNum = row.allConponentNum
+               ispart = row.ispart
+               allID = row.personAllId
+               e.preventDefault();
+               $("#tg").treegrid('select', row.allConponentNum);
+               $('#mm').menu('show', {
+                   left: e.pageX,
+                   top: e.pageY
+               });
+           }
+              , onClickCell: function (field, row) {
+              
+
+
+                if (field == "taskNum" & row.ispart) {
+
+                      layer.open({
+                          type: 2,
+                          area: ['500px', '500px'],
+                          title: '零件图纸',
+                          content: '/Home/零件图纸',
+                          cancel: function (index, layero) {
+                              //tgreload()
+                              layer.close(index)
+
+                              return false;
+                          },
+                          success: function (layero, index) {
+
+                              var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                              iframeWin.fun(row.id,true)
+                          }
+                      });
+                  }
+
+              }
+        });
+
+
+    </script>
+    <script>
+        addOption()
+        layui.use(['layer', 'form'], function () {
+            layer = layui.layer; form = layui.form;
+
+            form.on('select(search)', function (data) {
+                key = data.value
+                $('#tg').treegrid({
+
+
+                    //collapsible: true,
+                    //fitColumns: true,
+                    url: '/Task/SearchSubmit?str=' + key,
+                    idField: 'allConponentNum',
+                    animate: true,
+                    treeField: 'taskName',
+                    method: 'post',
+                    // rownumbers: true,
+                    //checkbox: true,
+                    columns: [[
+                        { title: '名称', field: 'taskName', width: '12.5%' },
+                        {
+                            title: '代号/图号', field: 'taskNum', width: '12.5%', formatter: function (value, row, index) {
+                                if (row.ispart) {
+                                    return '<p style="color:blue">' + (value == null ? "" : value) + '</p>';
+                                } else {
+                                    return value;
+                                }
+
+                            }
+                        },
+                        //{ title: '唯一识别码', field: 'allConponentNum', width: '12.5%' ,},
+                        { title: '工艺规划人', field: 'craftPersonName', width: '12.5%' },
+                        { title: '预览组别', field: 'previewCategoryStr', width: '12.5%' },
+                        { title: '计划开始时间', field: 'planStartTimeStr', width: '12.5%' },
+                        { title: '计划完成时间', field: 'planEndTimeStr', width: '12.5%' },
+                        { title: '实际开始时间', field: 'acceptTaskTimeStr', width: '12.5%' },
+                        { title: '实际完成时间', field: 'completeTimeStr', width: '12.5%' },
+                      { field: 'ispart', title: 'ispart', hidden: true },
+
+                      // { field: 'id', title: 'id', }, 
+
+                    ]]
+                    //,
+                    //data: [{ taskName: 11,allConponentNum:'1.1.' }]
+           , onLoadSuccess: function (data) {
+
+               $('.tree-folder.tree-folder-open').removeClass('tree-folder tree-folder-open')
+               $('.tree-icon').removeClass('tree-icon tree-file')
+               //$(".datagrid-view1").remove()
+               //$(".datagrid-view2").css('left', '0')
+
+               $('.panel-body').css('border-color', 'white')
+
+
+
+               var arr = $('td[field="taskName"]')
+               for (var i = 0; i < arr.length; i++) {
+                   var ispart = $(arr[i]).siblings('[field="ispart"]').children().text();
+
+                   if (ispart == "false") {
+                       $(arr[i]).css('font-weight', 'bold')
+                   }
+               }
+               //$.ajax({
+               //    url: '../刀具管理/Jurisdiction.ashx', success: function (d) {
+               //        var obj = JSON.parse(d)
+               //        var limit = obj.Limit
+               //        for (var i = 0; i < limit.length; i++) {
+               //            if (limit[i] == "操作") {
+               //                $('td[field="action"]').remove()
+               //            }
+               //        }
+               //    }
+
+               //})
+
+           }
+          , onContextMenu: function (e, row) {
+
+              componentID = row.componentID
+              id = row.id
+              taskName = row.taskName
+              taskNum = row.taskNum
+              planStartTimeStr = row.planStartTimeStr
+              planEndTimeStr = row.planEndTimeStr
+
+              previewCategoryStr = row.previewCategoryStr
+
+              allConponentNum = row.allConponentNum
+              ispart = row.ispart
+              allID = row.personAllId
+              e.preventDefault();
+              $("#tg").treegrid('select', row.allConponentNum);
+              $('#mm').menu('show', {
+                  left: e.pageX,
+                  top: e.pageY
+              });
+          }
+             , onClickCell: function (field, row) {
+
+
+
+                 if (field == "taskNum" & row.ispart) {
+
+                     layer.open({
+                         type: 2,
+                         area: ['500px', '500px'],
+                         title: '零件图纸',
+                         content: '/Home/零件图纸',
+                         cancel: function (index, layero) {
+                             //tgreload()
+                             layer.close(index)
+
+                             return false;
+                         },
+                         success: function (layero, index) {
+
+                             var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                             iframeWin.fun(row.id, true)
+                         }
+                     });
+                 }
+
+             }
+                });
+
+            });
+        })
+        function addOption() {
+            $.ajax({
+                url: '/Task/GetTaskInfoStrList',
+                success: function (res) {
+                    $('select').empty();
+                    $('select').append(' <option value="">选中后搜索...</option>')
+                    for (var i = 0; i < res.length; i++) {
+                        $('select').append('  <option value="'+res[i]+'">'+res[i]+'</option>')
+                    }
+                    form.render('select')
+                }
+
+            })
+        }
+        function append() {
+          
+            if (ispart) {
+                layer.msg("已经是零件", {icon:2,time:1000})
+            } else {
+                layer.confirm('添加', {
+                    btn: ['组件', '零件'] //按钮
+                }, function (index) {
+                    layer.close(index)
+                    layer.open({
+                        type: 2,
+                        title: '创建组件',
+                        area: ['500px', '400px'],
+                        content: '/Home/创建产品弹窗',
+                        success: function (layero, index) {
+
+                            var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                            iframeWin.fun(id, allConponentNum)
+
+                        }
+                    });
+                }, function () {
+                    layer.open({
+                        type: 2,
+                        title: '添加零件',
+                        area: ['500px', '500px'],
+                        content: '/Home/添加零件弹窗',
+                        success: function (layero, index) {
+
+                            var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                            iframeWin.fun(id, allConponentNum)
+
+                        }
+                    });
+                });
+            }
+         
+        }
+        function edit() {
+            if (ispart) {
+                layer.open({
+                    type: 2,
+                    title: '修改零件',
+                    area: ['500px', '400px'],
+                    content: '/Home/修改零件弹窗',
+                    success: function (layero, index) {
+
+                        var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                        iframeWin.fun(componentID, id, taskName, taskNum, planStartTimeStr, planEndTimeStr, allID, previewCategoryStr)
+
+                    }
+                });
+            } else {
+                layer.open({
+                    type: 2,
+                    title: '修改组件',
+                    area: ['500px', '400px'],
+                    content: '/Home/修改组件弹窗',
+                    success: function (layero, index) {
+
+                        var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                        iframeWin.fun(componentID, id, taskName, taskNum, planStartTimeStr, planEndTimeStr, allID, previewCategoryStr)
+
+                    }
+                });
+            }
+        }
+        function removeIt() {
+            if (ispart) {
+                layer.confirm("是否删除零件？", function () {
+                    $.ajax({
+                        url: '/Task/DeletePartTaskMethod',
+                        type: 'post',
+                        data: { taskId: id },
+                        success: function (res) {
+                            if (res == "ok") {
+                                layer.msg("删除成功", { icon: 1, time: 1000 }, function () { $('#tg').treegrid('reload'); })
+                            } else { layer.alert(res) }
+                        }
+                    })
+                })
+            } else {
+                layer.confirm("是否删除任务或组件？", function () {
+                    $.ajax({
+                        url: '/Task/DeleteCompontMethod',
+                        type: 'post',
+                        data: { compontId: id },
+                        success: function (res) {
+                            if (res == "ok") {
+                                layer.msg("删除成功", { icon: 1, time: 1000 }, function () { $('#tg').treegrid('reload'); })
+                            } else { layer.alert(res) }
+                        }
+                    })
+                })
+            }
+           
+        }
+        function collapse() {
+            var node = $('#tg').treegrid('getSelected');
+            if (node) {
+                $('#tg').treegrid('collapse', node.id);
+            }
+        }
+        function expand() {
+            var node = $('#tg').treegrid('getSelected');
+            if (node) {
+                $('#tg').treegrid('expand', node.id);
+            }
+        }
+        function create() {
+            layer.open({
+                type: 2,
+                title:'创建产品',
+                area:['500px','400px'],
+                content: '/Home/创建产品弹窗',
+                success: function (layero, index) {
+                
+                    var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+              
+                    iframeWin.fun(0, 0)
+                }
+            });
+        }
+        function tgReload() { $('#tg').treegrid('reload') }
+    </script>
+</body>
+</html>

@@ -1,0 +1,266 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <link href="/Resources/js/easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="/Resources/js/easyui/themes/icon.css" rel="stylesheet" />
+    <link href="/Resources/js/easyui/demo/demo.css" rel="stylesheet" />
+    <script src="/Resources/js/easyui/jquery.min.js"></script>
+    <script src="/Resources/js/easyui/jquery.easyui.min.js"></script>
+
+    <link href="/Resources/js/layui-v2.5.4/layui/css/layui.css" rel="stylesheet" />
+    <script src="/Resources/js/layui-v2.5.4/layui/layui.js"></script>
+    <!-- <script src="/Resources/js/jquery-3.3.1.js"></script>-->
+</head>
+<body>
+    <form class="layui-form">
+        <!-- 提示：如果你不想用form，你可以换成div等任何一个普通元素 -->
+
+
+        <div class="layui-form-item" style="margin-right: 15px">
+            <label class="layui-form-label" style="width: 120px">产品名称<span style="color: red">*</span></label>
+            <div class="layui-input-block" style="margin-left: 120px">
+                <input lay-verify="required" type="text" name="compontName" placeholder="必填项" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item" style="margin-right: 15px">
+            <label class="layui-form-label" style="width: 120px">产品代号<span style="color: red">*</span></label>
+            <div class="layui-input-block" style="margin-left: 120px">
+                <input lay-verify="required" type="text" name="compontNum" placeholder="必填项" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item" style="margin-right: 15px">
+            <label class="layui-form-label" style="width: 120px">零件图纸</label>
+            <div class="layui-input-block" style="margin-left: 120px">
+                <input type="file" id="file" autocomplete="off" class="layui-input" multiple="multiple">
+            </div>
+        </div>
+
+        <div class="layui-form-item" style="margin-right: 15px">
+            <label class="layui-form-label" style="width: 120px">计划开始时间<span style="color: red">*</span></label>
+            <div class="layui-input-block" style="margin-left: 120px">
+                <input lay-verify="required" type="text" name="planStartTime" id="planStartTime" lay-verify="date" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+        <div class="layui-form-item" style="margin-right: 15px">
+            <label class="layui-form-label" style="width: 120px">计划完成时间<span style="color: red">*</span></label>
+            <div class="layui-input-block" style="margin-left: 120px">
+                <input lay-verify="required" type="text" name="planEndTime" id="planEndTime" lay-verify="date" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+            </div>
+        </div>
+
+
+        <div class="layui-form-item">
+            <label class="layui-form-label" style="width: 120px">添加工艺</label>
+            <div class="layui-input-block">
+                <input type="checkbox" name="checkbox" lay-skin="switch" lay-text="ON|OFF" lay-filter="checkbox">
+            </div>
+        </div>
+
+      
+
+
+        <div class="layui-form-item" style="text-align: center">
+            <div class="layui-input-block" style="margin-left: 0">
+                <button class="layui-btn" lay-submit lay-filter="*">立即提交</button>
+                <button type="reset" class="layui-btn layui-btn-primary">重置</button>
+            </div>
+        </div>
+        <!-- 更多表单结构排版请移步文档左侧【页面元素-表单】一项阅览 -->
+    </form>
+
+    <script>
+      
+        layui.use(['form', 'laydate'], function () {
+            var form = layui.form, laydate = layui.laydate;
+            //日期
+            laydate.render({
+                elem: '#planStartTime',
+                type: 'datetime',
+                trigger: 'click' //采用click弹出
+            });
+            laydate.render({
+                elem: '#planEndTime',
+                type: 'datetime',
+                trigger: 'click' //采用click弹出
+            });
+            form.on('switch(checkbox)', function (data) {
+              
+             
+                if(data.elem.checked){
+                    switchState=true;
+                    var html=`
+                          <div class="layui-form-item" style="margin-right: 15px">
+                <label class="layui-form-label" style="width: 120px">工艺责任人<span style="color: red">*</span></label>
+                <div class="layui-input-block" style="margin-left: 120px">
+                    <input lay-verify="required" type="text" name="craftPersonId" id="craftPersonId" lay-verify="required" placeholder="yyyy-MM-dd HH:mm:ss" autocomplete="off" class="layui-input">
+                </div>
+            </div>
+
+            <div class="layui-form-item" style="margin-right: 15px">
+                <label class="layui-form-label" style="width: 120px">预览组别</label>
+                <div class="layui-input-block" id="checkbox" style="margin-left: 120px">
+                </div>
+            </div>
+
+                    `
+                $('[name="checkbox"]').parents('.layui-form-item').after(html)
+                $.ajax({
+                    url: '/Task/GetAllCompontPreviewCategory',
+                    type: 'post',
+                    success: function (res) {
+                        arr = res;
+                        for (var i = 0; i < res.length; i++) {
+                            $("#checkbox").append('<input type="checkbox" name="' + res[i].id + '" title="' + res[i].Name + '" lay-verify="required">')
+                        }
+                        layui.use('form', function () { layui.form.render() })
+                    }
+                })
+                $('#craftPersonId').combotreegrid({
+
+
+                    collapsible: true,
+                    fitColumns: true,
+                    url: '/Emmployee/GetAllStaffAndDepartment',
+                    idField: 'allID',
+                    animate: true,
+                    treeField: 'staff',
+                    method: 'get',
+                    rownumbers: true,
+                    //checkbox: true,
+                    columns: [[
+                        { title: '部门人员', field: 'staff', width: '100%' }
+
+
+                    ]]
+                    , onLoadSuccess: function (data) {
+                        $('.tree-folder.tree-folder-open').removeClass('tree-folder tree-folder-open')
+                        $('.tree-icon').removeClass('tree-icon tree-file')
+                        $(".datagrid-view1").remove()
+                        $(".datagrid-view2").css('left', '0')
+                        $('[modify="1"]').addClass('layui-btn-disabled').attr('disabled', 'disabled')
+                        $('[delete="1"]').addClass('layui-btn-disabled').attr('disabled', 'disabled')
+                        $('.panel-body').css('border-color', 'white')
+
+
+
+
+
+
+                    }
+                })
+                }else{
+                    switchState=false;
+                    $('[name="craftPersonId"]').parents('.layui-form-item').remove();
+                    $('#checkbox').parents('.layui-form-item').remove();
+                }
+            });
+            form.on('submit(*)', function (data) {
+
+                layer.confirm("是否提交", function () {
+                    if(switchState)
+                    {
+                        var formData = new FormData();
+                        var files = $("#file")[0].files;
+                        for (var i = 0; i < files.length; i++) {
+                            formData.append(i, files[i]);
+                        }
+                        formData.append('parentId', id);
+                        formData.append('compontName', data.field.compontName);
+                        formData.append('compontNum', data.field.compontNum);
+                        formData.append('planStartTime', data.field.planStartTime);
+                        formData.append('planEndTime', data.field.planEndTime);
+
+                        var g = $('#craftPersonId').combotreegrid('grid'); // 获取数据表格对象
+                        var r = g.datagrid('getSelected'); // 获取选择的行
+
+                        formData.append('craftPersonId', r.id);
+
+                        var previewCategoryStr = "";
+                        for (var i = 0; i < arr.length; i++) {
+                            if (typeof (data.field[arr[i].id]) != "undefined") {
+                                previewCategoryStr += arr[i].id + ",";
+                            }
+                        }
+                        formData.append('previewCategoryStr', previewCategoryStr);
+                        // data.field.parentId = id;
+                        $.ajax({
+                            url: "/Task/AddCompont",
+                            type: 'post',
+                            data: formData,
+                            contentType: false,
+                            processData: false,
+                            success: function (res) {
+                                if (res == "ok") {
+                                    layer.msg("上传成功", { icon: 1, time: 1000 }, function () {
+                                        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                        parent.layer.close(index); //再执行关闭    
+                                        parent.tgReload()
+                                        parent.addOption()
+                                    })
+                                } else { layer.alert(res) }
+                            }
+                        })
+                    }else{
+                        var formData = new FormData();
+                        var files = $("#file")[0].files;
+                        for (var i = 0; i < files.length; i++) {
+                            formData.append(i, files[i]);
+                        }
+                        formData.append('parentId', id);
+                        formData.append('compontName', data.field.compontName);
+                        formData.append('compontNum', data.field.compontNum);
+                        formData.append('planStartTime', data.field.planStartTime);
+                        formData.append('planEndTime', data.field.planEndTime);
+
+                    
+                     
+                  
+                        $.ajax({
+                            url: "/Task/AddCompontNoCraft",
+                            type: 'post',
+                            data: formData,
+                            contentType: false,
+                            processData: false,
+                            success: function (res) {
+                                if (res == "ok") {
+                                    layer.msg("上传成功", { icon: 1, time: 1000 }, function () {
+                                        var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                        parent.layer.close(index); //再执行关闭    
+                                        parent.tgReload()
+                                        parent.addOption()
+                                    })
+                                } else { layer.alert(res) }
+                            }
+                        })
+
+                    }
+                })
+
+                return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+            });
+        });
+        function fun(id1, allConponentNum1,ifHaveSwitch) {
+            id = id1;
+            allConponentNum1;
+           switchState=false;
+            if(!ifHaveSwitch){
+                $('[name="checkbox"]').parents('.layui-form-item').remove()
+            }
+            if (Number(id) != 0) {
+
+                $('[name="compontName"]').parent().siblings('label').text("");
+                $('[name="compontName"]').parent().siblings('label').append('组件名<span style="color:red">*</span>')
+                $('[name="compontNum"]').parent().siblings('label').text("");
+                $('[name="compontNum"]').parent().siblings('label').append('组件代号<span style="color:red">*</span>')
+            }
+        }
+    </script>
+</body>
+</html>

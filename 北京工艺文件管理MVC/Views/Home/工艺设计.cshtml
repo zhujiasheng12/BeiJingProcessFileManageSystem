@@ -1,0 +1,824 @@
+﻿<!DOCTYPE html>
+<html style="height: 100%">
+<head>
+    <meta charset="UTF-8">
+    <title>Basic TreeGrid - jQuery EasyUI Demo</title>
+
+    <link href="/Resources/js/easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="/Resources/js/easyui/themes/icon.css" rel="stylesheet" />
+    <link href="/Resources/js/easyui/demo/demo.css" rel="stylesheet" />
+    <script src="/Resources/js/easyui/jquery.min.js"></script>
+    <script src="/Resources/js/easyui/jquery.easyui.min.js"></script>
+
+    <link href="/Resources/js/layui-v2.5.4/layui/css/layui.css" rel="stylesheet" />
+    <script src="/Resources/js/layui-v2.5.4/layui/layui.js"></script>
+
+
+
+</head>
+<body style="height: 100%; padding: 10px">
+    <div id="mm" class="easyui-menu" style="width: 120px;">
+        <div onclick="arrangePerson()" data-options="">工艺安排</div>
+        <div onclick="download()" data-options="">下载图纸</div>
+        @*<div onclick="append()" data-options="iconCls:'icon-add'">添加</div>
+		<div onclick="edit()" data-options="iconCls:'icon-edit'">修改</div>
+          <div onclick="removeIt()" data-options="iconCls:'icon-remove'">删除</div>*@
+        <!--<div class="menu-sep"></div>-->
+        <!--	<div onclick="collapse()">收启</div>
+		<div onclick="expand()">展开</div>-->
+    </div>
+    <button class="layui-btn layui-btn-sm" style="margin-bottom: 10px" onclick="start()">开始</button>
+    <button class="layui-btn layui-btn-sm" style="margin-bottom: 10px" onclick="ProcessSubmitByCraftPersonMethod()">工艺过程卡提交</button>
+    @*  <button class="layui-btn layui-btn-sm" style="margin-bottom:10px" onclick="complete()">完成</button>*@
+    <button class="layui-btn layui-btn-sm" style="margin-bottom: 10px" onclick="location.reload()">刷新</button>
+    <table id="tg" style="height: 100%"></table>
+    <script>
+        
+        $('#tg').treegrid({
+
+
+            //collapsible: true,
+            //fitColumns: true,
+            url: '/CraftDesign/GetTaskInfo',
+            idField: 'allConponentNum',
+            animate: true,
+            treeField: 'taskName',
+            method: 'get',
+            // rownumbers: true,
+            checkbox: true,
+            cascadeCheck:false,
+            columns: [[
+               // {field:'allConponentNum'},
+                { title: '名称', field: 'taskName',width:'11.5%' },
+              {
+                  title: '代号/图号', field: 'taskNum', width: '9%', formatter: function (value, row, index) {
+                  
+                      return '<p style="color:blue;text-decoration:underline">' + (value == null ? "" : value) + '</p>';
+                   
+
+                  }
+              },
+              //{ title: '工艺责任人', field: 'craftPersonName', },
+              {
+                  title: '工艺过程卡', field: 'processCardUploadTimeStr', width: '9%', formatter: function (value, row, index) {
+                      if (row.craftPersonID != 0) {
+                          return '<p style="color:blue;text-decoration:underline">' + (value == null | value == "" ? "点击查看" : value) + '</p>';
+                      }
+                     
+                  }
+              },
+              {
+                  title: '工艺进程单', field: 'processScheduleUpTimeStr', width: '9%', formatter: function (value, row, index) {
+                      if (row.craftPersonID != 0) {
+                          return '<p style="color:blue;text-decoration:underline">' + (value == null | value == "" ? "点击查看" : value) + '</p>';
+                      }
+                  }
+              },
+              {
+                  title: '工装图纸', field: 'ToolingDrawingsUploadTimeStr', width: '9%', formatter: function (value, row, index) {
+                      if (row.craftPersonID != 0) {
+                          return '<p style="color:blue;text-decoration:underline">' + (value == null | value == "" ? "点击查看" : value) + '</p>';
+                      }
+                  }
+              },
+              {
+                  title: '加工程序', field: 'processFileUploadTimeStr', width: '9%', formatter: function (value, row, index) {
+                      if (row.craftPersonID != 0) {
+                          return '<p style="color:blue;text-decoration:underline">' + (value == null | value == "" ? "点击查看" : value) + '</p>';
+                      }
+                  }
+              },
+              { title: '计划开始时间', field: 'planStartTimeStr', width: '9%' },
+              { title: '计划完成时间', field: 'planEndTimeStr', width: '9%' },
+              { title: '实际开始时间', field: 'acceptTaskTimeStr', width: '9%' },
+              { title: '实际完成时间', field: 'completeTimeStr', width: '9%' },
+              { title: '任务状态', field: 'taskStateStr', width: '9%' },
+              //  { field: 'id', title: 'id', }, 
+                 { field: 'ispart', title: 'ispart', hidden:true}, 
+                 {field:'toolingDrawingsUploadFlag',hidden:true},
+                 {field:'processFileUploadFlag',hidden:true}
+            ]]
+            //,
+            //data: [{ taskName: 11,allConponentNum:'1.1.' }]
+            , onLoadSuccess: function (data) {
+
+                $('.tree-folder.tree-folder-open').removeClass('tree-folder tree-folder-open')
+                $('.tree-icon').removeClass('tree-icon tree-file')
+                //$(".datagrid-view1").remove()
+                //$(".datagrid-view2").css('left', '0')
+
+                $('.panel-body').css('border-color', 'white')
+
+                var states = $('td[field="taskStateStr"]')
+                for (var i = 0; i < states.length; i++) {
+                    if ($(states[i]).children().text() == "待完成") {
+                        $(states[i]).css('background-color','orange')
+                    } else if ($(states[i]).children().text() == "已完成") {
+                        $(states[i]).css('background-color', 'green')
+                    }else if ($(states[i]).children().text()!= "任务状态"){
+                        $(states[i]).css('background-color','orange')
+                    }
+                }
+
+              
+                var arr = $('td[field="taskName"]')
+                for (var i = 0; i < arr.length; i++) {
+                    var ispart = $(arr[i]).siblings('[field="ispart"]').children().text();
+                   
+                    if (ispart=="false") {
+                        $(arr[i]).css('font-weight', 'bold')
+                    }
+                    else {
+                        $(arr[i]).siblings('[field="taskNum"]').attr('title', '点击查看零件图纸')
+                        $(arr[i]).siblings('[field="processCardUploadTimeStr"]').attr('title', '点击查看工艺过程卡')
+                        $(arr[i]).siblings('[field="processScheduleUpTimeStr"]').attr('title', '点击查看工艺进程单')
+                        $(arr[i]).siblings('[field="ToolingDrawingsUploadTimeStr"]').attr('title', '点击查看工装图纸')
+                        $(arr[i]).siblings('[field="processFileUploadTimeStr"]').attr('title', '点击查加工程序')
+                    }
+                }
+
+
+
+
+              
+                let toolingDrawingsUploadFlags=$('td[field="toolingDrawingsUploadFlag"]')
+                for (let i = 0; i <  toolingDrawingsUploadFlags.length; i++) {
+                    if($(toolingDrawingsUploadFlags[i]).children().text()=="已完成"){
+                        $(toolingDrawingsUploadFlags[i]).siblings('td[field="ToolingDrawingsUploadTimeStr"]').css('background-color','green')
+                    }else if($(toolingDrawingsUploadFlags[i]).children().text()=="未完成"){
+                        $(toolingDrawingsUploadFlags[i]).siblings('td[field="ToolingDrawingsUploadTimeStr"]').css('background-color','orange')
+                    }
+                }
+              
+
+                let processFileUploadFlags=$('td[field="processFileUploadFlag"]')
+                for (let i = 0; i <  processFileUploadFlags.length; i++) {
+                    if($(processFileUploadFlags[i]).children().text()=="已完成"){
+                        $(processFileUploadFlags[i]).siblings('td[field="processFileUploadTimeStr"]').css('background-color','green')
+                    }else if($(processFileUploadFlags[i]).children().text()=="未完成"){
+                        $(processFileUploadFlags[i]).siblings('td[field="processFileUploadTimeStr"]').css('background-color','orange')
+                    }
+                }
+
+
+                let collapseStr=localStorage.getItem('collapseStr')==null?"":localStorage.getItem('collapseStr')
+                let collapseArr=collapseStr.split(',')
+                for (let i = 0; i < collapseArr.length; i++) {
+                    if(collapseArr[i]!=""){
+                        $('#tg').treegrid('collapse',collapseArr[i])
+                    }
+                }
+
+                //$.ajax({
+                //    url: '../刀具管理/Jurisdiction.ashx', success: function (d) {
+                //        var obj = JSON.parse(d)
+                //        var limit = obj.Limit
+                //        for (var i = 0; i < limit.length; i++) {
+                //            if (limit[i] == "操作") {
+                //                $('td[field="action"]').remove()
+                //            }
+                //        }
+                //    }
+
+                //})
+
+            }
+                  , onContextMenu: function (e, row) {
+                  
+                      componentID = row.componentID
+                      id = row.id
+                      taskName = row.taskName
+                      taskNum = row.taskNum
+                      planStartTimeStr = row.planStartTimeStr
+                      planEndTimeStr = row.planEndTimeStr
+
+                      previewCategoryStr = row.previewCategoryStr
+
+                      allConponentNum = row.allConponentNum
+                      ispart = row.ispart
+                      allID = row.personAllId
+                      craftPersonID= row.craftPersonID
+                      e.preventDefault();
+                      $("#tg").treegrid('select', row.allConponentNum);
+                      $('#mm').menu('show', {
+                          left: e.pageX,
+                          top: e.pageY
+                      });
+                  }
+            , onClickCell: function (field, row) {
+                var show = false;
+            
+              
+                if (field == "processCardUploadTimeStr" & row.ispart ) {
+                    if (sessionStorage.getItem("loginId") == row.craftPersonID) {
+                        show = true;
+                    }
+                    layer.open({
+                        type: 2,
+                        area: ['500px', '500px'],
+                        title: '工艺过程卡',
+                        content: '/Home/工艺过程卡',
+                        success: function (layero, index) {
+
+                            var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                            iframeWin.fun(row.id, row.allConponentNum,show)
+                        }
+                    });
+                } else if (field == "processCardUploadTimeStr" & !row.ispart & row.craftPersonID != 0) {
+                    if (sessionStorage.getItem("loginId") == row.craftPersonID) {
+                        show = true;
+                    }
+                    layer.open({
+                        type: 2,
+                        area: ['500px', '500px'],
+                        title: '工艺过程卡',
+                        content: '/Home/Com工艺过程卡',
+                        success: function (layero, index) {
+
+                            var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                            iframeWin.fun(row.id, row.allConponentNum, show)
+                        }
+                    });
+                }
+
+                else if (field == "processScheduleUpTimeStr" & row.ispart) {
+                    if (sessionStorage.getItem("loginId") == row.craftPersonID) {
+                        show = true;
+                    }
+                    layer.open({
+                        type: 2,
+                        area: ['500px', '500px'],
+                        title: '工艺进程单',
+                        content: '/Home/工艺进程单',
+                        success: function (layero, index) {
+
+                            var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                            iframeWin.fun(row.id, row.allConponentNum,show)
+                        }
+                    });
+                } else if (field == "processScheduleUpTimeStr" & !row.ispart & row.craftPersonID != 0) {
+                    if (sessionStorage.getItem("loginId") == row.craftPersonID) {
+                        show = true;
+                    }
+                    layer.open({
+                        type: 2,
+                        area: ['500px', '500px'],
+                        title: '工艺进程单',
+                        content: '/Home/Com工艺进程单',
+                        success: function (layero, index) {
+
+                            var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                            iframeWin.fun(row.id, row.allConponentNum, show)
+                        }
+                    });
+                }
+
+                else if (field == "ToolingDrawingsUploadTimeStr" & row.ispart) {
+
+                    layer.open({
+                        type: 2,
+                        area: ['600px', '500px'],
+                        title: '工装图纸',
+                        content: '/Home/工装图纸',
+                        cancel: function(index, layero){ 
+                            tgreload()
+                            layer.close(index)
+                            
+                            return false; 
+                        } ,
+                        success: function (layero, index) {
+
+                            var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                            iframeWin.fun(row.id, row.allConponentNum,"工装图纸",true)
+                        }
+                    });
+                } else if (field == "ToolingDrawingsUploadTimeStr" & !row.ispart & row.craftPersonID != 0) {
+
+                    layer.open({
+                        type: 2,
+                        area: ['600px', '500px'],
+                        title: '工装图纸',
+                        content: '/Home/Com工装图纸',
+                        cancel: function (index, layero) {
+                            tgreload()
+                            layer.close(index)
+
+                            return false;
+                        },
+                        success: function (layero, index) {
+
+                            var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                            iframeWin.fun(row.id, row.allConponentNum, "工装图纸", true)
+                        }
+                    });
+                }
+
+                else if (field == "processFileUploadTimeStr" & row.ispart) {
+
+                    layer.open({
+                        type: 2,
+                        area: ['600px', '500px'],
+                        title: '加工程序',
+                        content: '/Home/工装图纸',
+                        cancel: function (index, layero) {
+                            tgreload()
+                            layer.close(index)
+
+                            return false;
+                        },
+                        success: function (layero, index) {
+
+                            var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                            iframeWin.fun(row.id, row.allConponentNum, "加工程序",true)
+                        }
+                    });
+                } else if (field == "processFileUploadTimeStr" & !row.ispart & row.craftPersonID != 0) {
+
+                    layer.open({
+                        type: 2,
+                        area: ['600px', '500px'],
+                        title: '加工程序',
+                        content: '/Home/Com工装图纸',
+                        cancel: function (index, layero) {
+                            tgreload()
+                            layer.close(index)
+
+                            return false;
+                        },
+                        success: function (layero, index) {
+
+                            var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                            iframeWin.fun(row.id, row.allConponentNum, "加工程序", true)
+                        }
+                    });
+                }
+
+                else if (field == "taskNum" & row.ispart) {
+
+                    layer.open({
+                        type: 2,
+                        area: ['500px', '500px'],
+                        title: '零件图纸',
+                        content: '/Home/零件图纸',
+                        cancel: function (index, layero) {
+                            tgreload()
+                            layer.close(index)
+
+                            return false;
+                        },
+                        success: function (layero, index) {
+
+                            var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                            iframeWin.fun(row.id, false)
+                        }
+                    });
+                } else if (field == "taskNum" & !row.ispart ) {
+
+                    layer.open({
+                        type: 2,
+                        area: ['500px', '500px'],
+                        title: '组件图纸',
+                        content: '/Home/组件图纸',
+                        cancel: function (index, layero) {
+                            //tgreload()
+                            layer.close(index)
+
+                            return false;
+                        },
+                        success: function (layero, index) {
+
+                            var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                            iframeWin.fun(row.id, false)
+                        }
+                    });
+                }
+               
+            }
+          ,onCollapse(row){
+          let collapseStr=localStorage.getItem('collapseStr')==null?"":localStorage.getItem('collapseStr')
+        let collapseArr=collapseStr.split(',')
+
+          if(collapseArr.indexOf(row.allConponentNum)==-1){
+              collapseArr.push(row.allConponentNum)
+              localStorage.setItem('collapseStr',collapseArr)
+              //console.log(collapseArr)
+        }
+      
+        },
+          onExpand(row){
+              let collapseStr=localStorage.getItem('collapseStr')==null?"":localStorage.getItem('collapseStr')
+              let collapseArr=collapseStr.split(',')
+              let index=collapseArr.indexOf(row.allConponentNum);
+              if(index>-1){
+                  collapseArr.splice(index,1)
+                  localStorage.setItem('collapseStr',collapseArr)
+                 // console.log(collapseArr)
+               
+              }
+          }
+        });
+
+
+    </script>
+    <script>
+        layui.use('layer', function () { layer = layui.layer })
+        function append() {
+          
+            if (ispart) {
+                layer.msg("已经是零件", { icon: 2, time: 1000 })
+            } else {
+                layer.confirm('添加', {
+                    btn: ['组件', '零件'] //按钮
+                }, function () {
+                    layer.open({
+                        type: 2,
+                        title: '创建组件',
+                        area: ['500px', '400px'],
+                        content: '/Home/创建产品弹窗',
+                        success: function (layero, index) {
+
+                            var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                            iframeWin.fun(id, allConponentNum)
+
+                        }
+                    });
+                }, function () {
+                    layer.open({
+                        type: 2,
+                        title: '添加零件',
+                        area: ['500px', '500px'],
+                        content: '/Home/添加零件弹窗',
+                        success: function (layero, index) {
+
+                            var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                            iframeWin.fun(id, allConponentNum)
+
+                        }
+                    });
+                });
+            }
+
+        }
+        function edit() {
+            alert(allConponentNum)
+        }
+        function removeIt() {
+            window.alert(id)
+        }
+        function collapse() {
+            var node = $('#tg').treegrid('getSelected');
+            if (node) {
+                $('#tg').treegrid('collapse', node.id);
+            }
+        }
+        function expand() {
+            var node = $('#tg').treegrid('getSelected');
+            if (node) {
+                $('#tg').treegrid('expand', node.id);
+            }
+        }
+        function arrangePerson() {
+            if (craftPersonID == 0) {
+                layer.alert("无需工艺安排！")
+                return;
+            }
+            layer.open({
+                type: 2,
+                area: ['500px', '500px'],
+                title: '安排人员',
+                content: '/Home/安排人员弹窗',
+                cancel: function (index, layero) {
+                    tgreload()
+                    layer.close(index)
+
+                    return false;
+                },
+                success: function (layero, index) {
+
+                    var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                    iframeWin.fun(id,ispart)
+                }
+            });
+            
+        }
+        function start() {
+            layui.use('layer', function () { layer = layui.layer })
+            layer.confirm("是否开始？", function (index) {
+
+                var arr = $("#tg").treegrid('getCheckedNodes')
+                if (arr.length == 0) {
+                    layer.alert("请先勾选");
+                    return;
+                }
+                var taskIdList = "";
+                var comIdList = "";
+                for (var i = 0; i < arr.length; i++) {
+                  
+                 
+                    if (arr[i].ispart) {
+                        //if (arr[i].taskState != 1) {
+                        //    layer.alert("代号/图号：" + arr[i].allConponentNum + "不满足开始条件！");
+                        //    return;
+                        //}
+                        taskIdList += arr[i].id + ",";
+                    } else {
+                        comIdList += arr[i].id + ",";
+                    }
+                }
+                if (taskIdList != "") {
+                    $.ajax({
+                        url: '/CraftDesign/AcceptTaskMethodByCraftPerson',
+                        type: 'post',
+                        data: { taskIdList: taskIdList },
+                        success: function (res) {
+
+                            if (typeof (res) == "object") {
+                              
+                                layer.alert(JSON.stringify(res)
+                                    //, {
+                                    //end: function () { tgreload() }
+                                    //}
+                                );
+                                tgreload()
+                            }
+
+                            else {
+                                if (res == "ok") {
+                                    layer.msg("开始成功", { icon: 1, time: 1000 }, function () {
+                                        $("#tg").treegrid('reload')
+                                    })
+
+
+                                } else {
+                                  
+                                    layer.alert(res);
+                                    tgreload()
+                                }
+                            }
+                        }
+                    })
+                }
+                if (comIdList != "") {
+                    $.ajax({
+                        url: '/CompontCraftDesign/AcceptTaskMethodByCraftPerson',
+                        type: 'post',
+                        data: { taskIdList: comIdList },
+                        success: function (res) {
+
+                            if (typeof (res) == "object") { layer.alert(JSON.stringify(res)); tgreload() }
+
+                            else {
+                                if (res == "ok") {
+                                    layer.msg("开始成功", { icon: 1, time: 1000 }, function () {
+                                        $("#tg").treegrid('reload')
+                                    })
+                                } else { layer.alert(res); tgreload() }
+                            }
+                        }
+                    })
+                }
+            })
+      
+
+        }
+        function ProcessSubmitByCraftPersonMethod() {
+          
+            layui.use('layer', function () { layer = layui.layer })
+            layer.confirm("是否提交？", function (index) {
+
+                var arr = $("#tg").treegrid('getCheckedNodes')
+                if (arr.length == 0) {
+                    layer.alert("请先勾选");
+                    return;
+                }
+                var taskIdList = "";
+                var comIdList = "";
+                for (var i = 0; i < arr.length; i++) {
+
+                 
+                    if (arr[i].ispart) {
+                        //if (arr[i].taskState != 3) {
+                        //    layer.alert("代号/图号：" + arr[i].allConponentNum + "不满足提交条件！");
+                        //    return;
+                        //}
+                        taskIdList += arr[i].id + ",";
+                    } else {
+                        comIdList += arr[i].id + ",";
+                    }
+                }
+                if (taskIdList != "") {
+                    $.ajax({
+                        url: '/CraftDesign/ProcessSubmitByCraftPersonMethod',
+                        type: 'post',
+                        data: { taskIdList: taskIdList },
+                        success: function (res) {
+
+                            if (typeof (res) == "object") { layer.alert(JSON.stringify(res)); tgreload() }
+
+                            else {
+                                if (res == "ok") {
+                                    layer.msg("开始成功", { icon: 1, time: 1000 }, function () {
+                                        $("#tg").treegrid('reload')
+                                    })
+                                } else { layer.alert(res); tgreload() }
+                            }
+                        }
+                    })
+                }
+                if (comIdList != "") {
+                    $.ajax({
+                        url: '/CompontCraftDesign/ProcessSubmitByCraftPersonMethod',
+                        type: 'post',
+                        data: { taskIdList: comIdList },
+                        success: function (res) {
+
+                            if (typeof (res) == "object") { layer.alert(JSON.stringify(res)); tgreload() }
+
+                            else {
+                                if (res == "ok") {
+                                    layer.msg("开始成功", { icon: 1, time: 1000 }, function () {
+                                        $("#tg").treegrid('reload')
+                                    })
+                                } else { layer.alert(res); tgreload() }
+                            }
+                        }
+                    })
+                }
+            })
+
+
+        }
+        function complete() {
+            layui.use('layer', function () { layer = layui.layer })
+            layer.confirm("是否完成？", function (index) {
+
+                var arr = $("#tg").treegrid('getCheckedNodes')
+                if (arr.length == 0) {
+                    layer.alert("请先勾选");
+                    return;
+                }
+                var taskIdList = "";
+                var comIdList = "";
+                for (var i = 0; i < arr.length; i++) {
+
+
+                    if (arr[i].ispart) {
+                        //if (arr[i].taskState != 4) {
+                        //    layer.alert("代号/图号：" + arr[i].allConponentNum + "不满足完成条件！");
+                        //    return;
+                        //}
+                        taskIdList += arr[i].id + ",";
+                    } else {
+                        comIdList += arr[i].id + ",";
+                    }
+                }
+                if (taskIdList != "") {
+                    $.ajax({
+                        url: '/CraftDesign/CompleteTaskSubmitMethod',
+                        type: 'post',
+                        data: { taskIdList: taskIdList },
+                        success: function (res) {
+
+                            if (typeof (res) == "object") { layer.alert(JSON.stringify(res)); tgreload() }
+
+                            else {
+                                if (res == "ok") {
+                                    layer.msg("完成成功", { icon: 1, time: 1000 }, function () {
+                                        $("#tg").treegrid('reload')
+                                    })
+                                } else { layer.alert(res); tgreload() }
+                            }
+                        }
+                    })
+                }
+                if (comIdList != "") {
+                    $.ajax({
+                        url: '/CompontCraftDesign/CompleteTaskSubmitMethod',
+                        type: 'post',
+                        data: { taskIdList: comIdList },
+                        success: function (res) {
+
+                            if (typeof (res) == "object") { layer.alert(JSON.stringify(res)); tgreload() }
+
+                            else {
+                                if (res == "ok") {
+                                    layer.msg("开始成功", { icon: 1, time: 1000 }, function () {
+                                        $("#tg").treegrid('reload')
+                                    })
+                                } else { layer.alert(res); tgreload() }
+                            }
+                        }
+                    })
+                }
+            })
+
+        }
+        function tgreload() {
+           
+            $("#tg").treegrid('reload')
+        }
+
+
+
+        function download() {
+            var index = layer.load(1);
+            if (!ispart) { 
+                $.ajax({
+                    url: '/Task/GetFileDownLoadPath',
+                    type: 'post',
+                    data: {id:id},
+                    success: function (res) {
+                        layer.close(index)
+                        res=JSON.parse(res)
+                        if (res.flag) {
+                            //window.open('/' + res.res)
+                            let a=document.createElement('a')
+                            a.href='/'+res.res
+                            a.click()
+                            setTimeout(function () {
+                                $.ajax({
+                                    url: '/Task/DeleteFileDownLoadPath',
+                                    type: 'post',
+                                    data: { path: res.res },
+                                    success: function (res) {
+                                   
+                                    }
+                                })
+                            }, 100)
+                     
+                    
+                        } else {
+                            layui.use('layer', function () {
+                                layui.layer.alert(res.res)
+                            })
+                        }
+             
+                 
+                    }
+                })
+            } else {
+
+
+                $.ajax({
+                    url: '/Task/GetTaskFileDownLoadPath',
+                    type: 'post',
+                    data: { id: id },
+                    success: function (res) {
+                        layer.close(index)
+                        res = JSON.parse(res)
+                        if (res.flag) {
+                            // window.open('/' + res.res)
+                            let a=document.createElement('a')
+                            a.href='/'+res.res
+                            a.click()
+
+                            setTimeout(function () {
+                                $.ajax({
+                                    url: '/Task/DeleteFileDownLoadPath',
+                                    type: 'post',
+                                    data: { path: res.res },
+                                    success: function (res) {
+
+                                    }
+                                })
+                            }, 100)
+
+
+                        } else {
+                            layui.use('layer', function () {
+                                layui.layer.alert(res.res)
+                            })
+                        }
+
+
+                    }
+                })
+
+
+            }
+        }
+        layui.use('layer',function(){
+            if(sessionStorage.getItem('limit').indexOf('工艺_工艺安排')==-1){
+                $.ajax({
+                    url:'/Task/GetPopUpWindowsContentByLoginPerson',
+                    type:'get',
+                    success:function(res){
+                        if(res!="")
+                            {
+                            parent.layui.layer.open({
+                                type:0
+                      ,offset:'rb'
+                    ,shade:0
+                    ,title: '注意!'
+                  ,content: res
+                            }); 
+                    }
+                    }
+                })
+            }
+         
+        })
+         
+    </script>
+</body>
+</html>

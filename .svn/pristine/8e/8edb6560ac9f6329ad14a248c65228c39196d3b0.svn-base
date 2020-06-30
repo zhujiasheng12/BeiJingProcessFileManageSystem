@@ -1,0 +1,33 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Web;
+
+namespace 北京工艺文件管理MVC.Models
+{
+    public class CompontInfoManage
+    {
+
+    }
+
+    public class CompontInfo
+    {
+        public int id { get; set; }
+        public string componentNum { get; set; }
+        public string componentName { get; set; }
+        public string planStartTimeStr { get; set; }
+        public DateTime planStartTime { get; set; }
+        public string planEndTimeStr { get; set; }
+        public DateTime planEndTime { get; set; }
+        public string creatTimeStr { get; set; }
+        public DateTime creatTime { get; set; }
+        public string createPersonName { get; set; }
+        public int creatPersonID { get; set; }
+        public string lastAlterTimeStr { get; set; }
+        public DateTime lastAlterTime { get; set; }
+        public string lastAlterPersonName { get; set; }
+        public int lastAlterPersonID { get; set; }
+        public List<CompontInfo> listCompontInfos { get; set; }
+        public List<TaskInfo> taskInfos { get; set; }
+    }
+}

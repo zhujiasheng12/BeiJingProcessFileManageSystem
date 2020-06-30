@@ -1,0 +1,107 @@
+﻿<!DOCTYPE html>
+<html style="height:100%">
+<head>
+    <meta charset="UTF-8">
+    <title></title>
+    <link href="/Resources/js/easyui/themes/default/easyui.css" rel="stylesheet" />
+    <link href="/Resources/js/easyui/themes/icon.css" rel="stylesheet" />
+    <link href="/Resources/js/easyui/demo/demo.css" rel="stylesheet" />
+    <script src="/Resources/js/easyui/jquery.min.js"></script>
+    <script src="/Resources/js/easyui/jquery.easyui.min.js"></script>
+    
+   <link href="/Resources/js/layui-v2.5.4/layui/css/layui.css" rel="stylesheet" />
+    <script src="/Resources/js/layui-v2.5.4/layui/layui.js"></script>
+</head>
+<body style="height:100%">
+    
+    <div class="layui-row" style="height:100%">
+        <div class="layui-col-md12">
+            <form class="layui-form" action="">
+               
+                <div class="layui-form-item">
+                    <label class="layui-form-label"style="width:100px">部门<span style="color:red">*</span></label>
+                    <div class="layui-input-block">
+                        <input type="text" name="departmentName" required lay-verify="required" placeholder="必填项" autocomplete="off" class="layui-input" >
+                    </div>
+                </div>
+
+             
+              
+
+               
+                
+                <div class="layui-form-item"style="text-align:center">
+                    <div class="layui-input-block"style="margin-left:0">
+                        <button class="layui-btn" lay-submit lay-filter="*">立即提交</button>
+                       
+                    </div>
+                </div>
+            </form>
+        </div>
+       <!-- <div class="layui-col-md6" style="height:100%">
+            <fieldset class="layui-elem-field layui-field-title" style="margin-top: 20px;">
+                <legend>权限</legend>
+            </fieldset>
+            <ul id="tree" style="width:100%;height:100%" >
+
+            </ul>
+        </div>-->
+        </div>
+    
+    <script>
+  
+    </script>
+  
+ 
+    <script>
+        function fun(staff1, id1) {
+
+            staff = staff1;
+            id = id1;
+
+            $('[name="departmentName"]').val(staff1)
+
+        }
+
+        layui.use('form', function () {
+            var form = layui.form, layer = layui.layer;
+            form.on('submit(*)', function (data) {
+
+
+
+                layer.confirm("是否提交", function (index) {
+           
+                    data.field.departmentId = id;
+
+                 
+                    $.ajax({
+                        url: '/Emmployee/AlterDepartmengInfoMethod',
+                        type: 'POST',
+
+                        data: data.field,
+                        success: function (d) {
+                            if (d == "ok") {
+                                debugger
+                                layer.msg("修改成功", { icon: 1, time: 1000 }, function () {
+                                    var index = parent.layer.getFrameIndex(window.name); //先得到当前iframe层的索引
+                                    parent.layer.close(index); //再执行关闭   
+                                    parent.tgreload()
+                                })
+
+
+                            }
+                            else {
+                                layer.alert(d)
+                            }
+                        }
+
+                    })
+                    layer.close(index)
+                })
+                return false; //阻止表单跳转。如果需要表单跳转，去掉这段即可。
+            });
+        })
+
+    </script>
+</body>
+</html>

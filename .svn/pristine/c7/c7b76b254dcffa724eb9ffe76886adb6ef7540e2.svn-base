@@ -1,0 +1,321 @@
+﻿<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title></title>
+    <link href="/Resources/js/layui-v2.5.4/layui/css/layui.css" rel="stylesheet" />
+    <script src="/Resources/js/layui-v2.5.4/layui/layui.js"></script>
+    <script src="/Resources/js/jquery-3.3.1.js"></script>
+</head>
+<body style="padding:10px">
+   <!-- <fieldset class="layui-elem-field">
+        <legend></legend>
+        <div class="layui-field-box">-->
+            <table id="table1" lay-filter="filter1"></table>
+     <table id="table2" lay-filter="filter2"></table>
+   <!--     </div>
+    </fieldset>-->
+
+
+
+    <script type="text/html" id="toolbarDemo1">
+        <div style="display:none">
+            <input id="file" onchange="upload()" type="file" multiple="multiple" />
+               <input id="importWord" onchange="importWord()" type="file" accept=".doc,.docx" />
+        </div>
+        <div class="layui-btn-container" >
+            
+            <button class="layui-btn layui-btn-sm" lay-event="upload" style=""><i class="layui-icon layui-icon-upload-circle"></i>上传</button>
+
+        </div>
+    </script>
+
+
+     <script type="text/html" id="toolbarDemo2">
+    
+        <div class="layui-btn-container" >
+
+            <button class="layui-btn layui-btn-sm" lay-event="add" style=""><i class="layui-icon layui-icon-add"></i>添加工序</button>
+             <button class="layui-btn layui-btn-sm" lay-event="import" style=""><i class="layui-icon layui-icon-add"></i>导入工序</button>
+        
+        </div>
+    </script>
+
+
+    <script>
+      
+        function fun(id1,allId,show1) {
+       id=id1
+     
+            layui.use('table', function () {
+                var table = layui.table;
+
+                //第一个实例
+                table1 = table.render({
+                    elem: '#table1'
+                     , toolbar: '#toolbarDemo1' //开启头部工具栏，并为其绑定左侧模板
+                     , url: '/CompontCraftDesign/ReadTaskCraftFile'
+                       , method: 'post',
+                       where: { taskId: id,flag:'工艺过程卡' }
+                    // , page: true
+                    //, height: height
+                    , defaultToolbar: []
+                     , cols: [[ //表头
+                        //{ type: 'checkbox', fixed: 'left' },
+                        { field: 'fileName', title: '文件名', },
+                          { field: 'updateTimeStr', title: '上传时间', },
+                          {
+                              fixed: 'right', title: '操作', templet: function (d) {
+                                  var html = ' <a href="/' + d.downloadPath + '" download="' + d.fileName + '"> <button class="layui-btn layui-btn-xs" ><i class="layui-icon layui-icon-download-circle"></i>下载</button></a>' +
+                                 '<button style="margin-left:10px" class="layui-btn layui-btn-xs layui-btn-danger" onclick="DeleteTaskCraftFile(`' + d.fileName + '`)"><i class="layui-icon layui-icon-delete"></i>删除</button>'
+                                  return html;
+                              }
+                          }
+
+                     ]], done: function () {
+                         $(".layui-table-tool-temp").css('padding-right', 0)
+                         if (!show1) {
+                             $('.layui-table-tool').remove()
+                             $('.layui-btn-danger').remove()
+                         }
+
+                     }
+                });
+
+                table2 = table.render({
+                    elem: '#table2'
+                  , toolbar: '#toolbarDemo2' //开启头部工具栏，并为其绑定左侧模板
+                    , url: '/CompontCraftDesign/GetPartsProcessInfoByPartTask'
+                 ,method:'post',
+                 where: {taskId:id}
+                    // , page: true
+                    //, height: height
+                 , defaultToolbar: []
+                  , cols: [[ //表头
+                     //{ type: 'checkbox', fixed: 'left' },
+                     { field: 'processNum', title: '工序号', },
+                       { field: 'processingTypeStr', title: '组别', },
+                       {
+                           fixed: 'right', title: '操作', templet: function (d) {
+                               var html =
+                              '<button style="margin-left:10px" class="layui-btn layui-btn-xs layui-btn-danger" onclick="del(`' + d.id + '`)"><i class="layui-icon layui-icon-delete"></i>删除</button>'
+                               return html;
+                           }
+                       }
+
+                  ]], done: function () {
+                      $(".layui-table-tool-temp").css('padding-right', 0)
+                      //if (!bool) {
+                      //    $('.layui-table-tool').remove()
+                      //    $('.layui-btn-danger').remove()
+                      //}
+                      if (!show1) {
+                          $('.layui-table-tool').remove()
+                          $('.layui-btn-danger').remove()
+                      }
+                  }
+                });
+
+                //头工具栏事件 
+                table.on('toolbar(filter1)', function (obj) {
+                    var checkStatus = table.checkStatus(obj.config.id);
+                    var data = checkStatus.data;
+                    switch (obj.event) {
+                        case 'upload':
+                            $("#file").click()
+                            //if ($("#file").val() == "") {
+                            //    layer.alert("请选择文件")
+                            //    return;
+                            //}
+
+                            break;
+
+                  
+                    };
+                });
+
+
+                table.on('toolbar(filter2)', function (obj) {
+                   
+                    switch (obj.event) {
+                        case 'add':
+                          
+                            var processNum = $("#table2").next().find('.layui-table-body.layui-table-main').find('tr').length + 1;
+                            layer.open({
+                                type: 2,
+                                area:['500px','400px'],
+                                content: '/Home/Com添加工序',
+                                success: function (layero, index) {
+                                   
+                                    var iframeWin = window[layero.find('iframe')[0]['name']]; //得到iframe页的窗口对象，执行iframe页的方法：iframeWin.method();
+                                    iframeWin.fun(id, processNum);
+                                }
+                            });
+                        
+                            break;
+                        case 'import':
+
+                            $("#importWord").click();
+                            break;
+      
+                
+                    };
+                });
+
+            });
+        }
+        function upload() {
+           
+            //layer.confirm("是否上传", function () {
+            var files = document.getElementById("file").files;
+        
+                 formData = new FormData();
+                for (var i = 0; i < files.length; i++) {
+                    formData.append("file" + i, files[i]);
+                }
+           
+                formData.append("taskId", id);
+                formData.append("flag", "工艺过程卡")
+        
+                $.ajax({
+                    url: "/CompontCraftDesign/SaveTaskCraftFile",
+                    type: 'post',
+                    processData: false,
+                    contentType: false,
+                    data: formData,
+                    success: function (res) {
+                        if (res == "ok") {
+                            layer.msg("上传成功", { icon: 1, time: 1000 }, function () {
+                                table1.reload()
+                                parent.tgreload()
+                            })
+                        } else if (res = "已经存在") {
+                            //询问框
+
+                            layer.confirm('是否升级？', {
+                                btn: ['是', '否'] //按钮
+                            }, function () {
+                              
+                              
+                                formData.append('saveFlag', '1')
+                            
+                                $.ajax({
+                                    url: "/CompontCraftDesign/SaveTaskCraftFileExict",
+                                    type: 'post',
+                                    processData: false,
+                                    contentType: false,
+                                    data:formData,
+                                    success: function (res) {
+                                        if (res == "ok") {
+                                            layer.msg("上传成功", { icon: 1, time: 1000 }, function () {
+                                                table1.reload()
+                                                parent.tgreload()
+                                            })
+                                        } else { layer.alert(res) }
+                                    }
+
+                                })
+                            }, function () {
+                                formData.append('saveFlag', '0')
+                                $.ajax({
+                                    url: "/CompontCraftDesign/SaveTaskCraftFileExict",
+                                    type: 'post',
+                                    processData: false,
+                                    contentType: false,
+                                    data: formData,
+                                    success: function (res) {
+                                        if (res == "ok") {
+                                            layer.msg("上传成功", { icon: 1, time: 1000 }, function () {
+                                                table1.reload()
+                                                parent.tgreload()
+                                            })
+                                        } else {
+                                            layer.alert(res)
+                                        }
+                                    }
+
+                                })
+                            });
+                        }
+                        else { layer.alert(res) }
+                    }
+
+                })
+            //})
+        }
+        function del(processId) {
+            layer.confirm("是否删除", function () {
+              
+
+            
+
+                $.ajax({
+                    url: '/CompontCraftDesign/DeletePartsProcessMethod',
+                    type: 'post',
+                    data: { processId: processId },
+                    success: function (res) {
+                        if (res == 'ok') {
+                            layer.msg("删除成功", { icon: 1, time: 1000 }, function () {
+                                table2.reload()
+                                parent.tgreload()
+                            })
+                        } else {
+                            layer.alert(res)
+                        }
+                    }
+                })
+            })
+        }
+
+        function DeleteTaskCraftFile(fileNames) {
+            layer.confirm("是否删除", function () {
+                $.ajax({
+                    url: '/CompontCraftDesign/DeleteTaskCraftFile',
+                    type: 'post',
+                    data: { taskId: id, fileNames: fileNames ,flag:"工艺过程卡"},
+                    success: function (res) {
+                        if (res == 'ok') {
+                            layer.msg("删除成功", { icon: 1, time: 1000 }, function () {
+                                table1.reload()
+                                parent.tgreload()
+                            })
+                        } else {
+                            layer.alert(res)
+                        }
+                    }
+                })
+            })
+        }
+
+        function importWord() {
+            var formData = new FormData();
+            var file = $("#importWord")[0].files[0];
+            $("#importWord").val("")
+            var arr = file.name.split('.');
+            if (arr[arr.length - 1] != 'doc' & arr[arr.length - 1] != 'docx') {
+                layer.alert("请上传doc或者docx格式！")
+                return;
+            }
+            formData.append('file', file);
+            formData.append('CompontId', id)
+            $.ajax({
+                url: '/CompontCraftDesign/CreatProcessByFile',
+                type: 'post',
+                data: formData,
+                processData: false,
+                contentType: false,
+                success: function (res) {
+                    if (res == "ok") {
+                        layer.msg("上传成功", { icon: 1, time: 1000 }, function () {
+                            table2.reload()
+                        })
+                    } else {
+                        layer.alert(res)
+                    }
+                }
+            })
+        }
+
+    </script>
+</body>
+</html>
