@@ -189,9 +189,8 @@ namespace 北京工艺文件管理MVC.Models
                             }
 
                         }
-                        
-                        compontInfo.children = CompontInfoManage.GetTaskInfo(model,item.ID, compontInfo.allConponentNum + ".");
                         var unendFlag = true;
+                        compontInfo.children = CompontInfoManage.GetTaskInfo(model,item.ID, compontInfo.allConponentNum + ".");
                         {
                             var count = compontInfo.children.Where(r => r.taskStateStr != "已完成").Count();
                             if (count > 0)
@@ -1596,7 +1595,7 @@ namespace 北京工艺文件管理MVC.Models
                                 compont.CraftPersonID = null;
                                 compont.TaskState = 5;
 
-                                if (true)
+                                if (isAlter)
                                 {
                                     DatabaseList da = DatabaseList.GetData();
                                     da.JDJS_PDMS_CompontInfo_Table.Where(r => r.ID == compontID).First().CraftPersonID = null;

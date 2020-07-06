@@ -189,17 +189,9 @@ namespace 北京工艺文件管理MVC.Models
                             }
 
                         }
-                        
-                        compontInfo.children = CompontInfoManage.GetTaskInfo(model,item.ID, compontInfo.allConponentNum + ".");
-                        var unendFlag = true;
-                        {
-                            var count = compontInfo.children.Where(r => r.taskStateStr != "已完成").Count();
-                            if (count > 0)
-                            {
-                                unendFlag = false;
-                            }
 
-                        }
+                        compontInfo.children = CompontInfoManage.GetTaskInfo(model,item.ID, compontInfo.allConponentNum + ".");
+
                         if (compontInfo.children != null)
                         {
                             foreach (var real in compontInfo.children)
@@ -216,7 +208,7 @@ namespace 北京工艺文件管理MVC.Models
                         compontInfo.allTaskNum += list.Count();
                         compontInfo.unfinishedNum += unfinish;
 
-                        if (!(compontInfo.taskStateStr == "已完成" && compontInfo.unfinishedNum < 1 && (unendFlag)))
+                        if (compontInfo.taskStateStr == "已完成" && compontInfo.unfinishedNum > 0)
                         {
                             compontInfo.taskStateStr = "待完成";
                         }
@@ -409,15 +401,11 @@ namespace 北京工艺文件管理MVC.Models
                             }
 
                         }
-                        var unendFlag = true;
+
                         compontInfo.children = CompontInfoManage.GetTaskInfoCreate(model,item.ID, compontInfo.allConponentNum + ".");
 
                         {
-                            var count = compontInfo.children.Where(r => r.taskStateStr !="已完成").Count();
-                            if (count > 0)
-                            {
-                                unendFlag = false;
-                            }
+
 
                         }
 
@@ -435,7 +423,7 @@ namespace 北京工艺文件管理MVC.Models
                         compontInfo.allTaskNum += list.Count();
                         compontInfo.unfinishedNum += unfinish;
 
-                        if (!(compontInfo.taskStateStr == "已完成" && compontInfo.unfinishedNum < 1&&(unendFlag)))
+                        if (compontInfo.taskStateStr == "已完成" && compontInfo.unfinishedNum > 0)
                         {
                             compontInfo.taskStateStr = "待完成";
                         }
@@ -1596,7 +1584,7 @@ namespace 北京工艺文件管理MVC.Models
                                 compont.CraftPersonID = null;
                                 compont.TaskState = 5;
 
-                                if (true)
+                                if (isAlter)
                                 {
                                     DatabaseList da = DatabaseList.GetData();
                                     da.JDJS_PDMS_CompontInfo_Table.Where(r => r.ID == compontID).First().CraftPersonID = null;

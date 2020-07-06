@@ -189,9 +189,8 @@ namespace 北京工艺文件管理MVC.Models
                             }
 
                         }
-                        
-                        compontInfo.children = CompontInfoManage.GetTaskInfo(model,item.ID, compontInfo.allConponentNum + ".");
                         var unendFlag = true;
+                        compontInfo.children = CompontInfoManage.GetTaskInfo(model,item.ID, compontInfo.allConponentNum + ".");
                         {
                             var count = compontInfo.children.Where(r => r.taskStateStr != "已完成").Count();
                             if (count > 0)

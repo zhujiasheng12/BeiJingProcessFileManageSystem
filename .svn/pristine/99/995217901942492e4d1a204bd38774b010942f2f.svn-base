@@ -189,17 +189,9 @@ namespace 北京工艺文件管理MVC.Models
                             }
 
                         }
-                        
-                        compontInfo.children = CompontInfoManage.GetTaskInfo(model,item.ID, compontInfo.allConponentNum + ".");
-                        var unendFlag = true;
-                        {
-                            var count = compontInfo.children.Where(r => r.taskStateStr != "已完成").Count();
-                            if (count > 0)
-                            {
-                                unendFlag = false;
-                            }
 
-                        }
+                        compontInfo.children = CompontInfoManage.GetTaskInfo(model,item.ID, compontInfo.allConponentNum + ".");
+
                         if (compontInfo.children != null)
                         {
                             foreach (var real in compontInfo.children)
@@ -211,12 +203,193 @@ namespace 北京工艺文件管理MVC.Models
                         int unfinish = 0;
                         List<CompontInfo> list = TaskInfoManage.GetPartTaskInfo(model, item.ID, compontInfo.allConponentNum + ".", out unfinish);
 
-                       
+                        {
+                            //try
+                            //{
+                            //    //int unfinish = 0;
+                            //    List<CompontInfo> taskInfos = new List<CompontInfo>();
+                            //    //using (Model1 model = new Model1())
+                            //    {
+                            //        var tasks = model.JDJS_PDMS_TaskInfo_Table.Where(r => r.ComponentID == parentID && r.state == "正常");
+                            //        foreach (var real in tasks)
+                            //        {
+                            //            CompontInfo task = new CompontInfo();
+                            //            task.componentID = parentID;
+                            //            task.acceptTaskTime = real.AcceptTaskTime == null ? DateTime.Now : Convert.ToDateTime(real.AcceptTaskTime);
+                            //            task.acceptTaskTimeStr = real.AcceptTaskTime == null ? "" : real.AcceptTaskTime.ToString().Substring(0, real.AcceptTaskTime.ToString().LastIndexOf(':'));
+                            //            task.arrangeTaskTime = real.ArrangeTaskTime == null ? DateTime.Now : Convert.ToDateTime(real.ArrangeTaskTime);
+                            //            task.arrangeTaskTimeStr = real.ArrangeTaskTime == null ? "" : real.ArrangeTaskTime.ToString().Substring(0, real.ArrangeTaskTime.ToString().LastIndexOf(':'));
+                            //            task.completeTime = real.CompleteTime == null ? DateTime.Now : Convert.ToDateTime(real.CompleteTime);
+                            //            task.completeTimeStr = real.CompleteTime == null ? "" : real.CompleteTime.ToString().Substring(0, real.CompleteTime.ToString().LastIndexOf(':'));
+                            //            task.craftPersonID = real.CraftPersonID == null ? 0 : Convert.ToInt32(real.CraftPersonID);
+                            //            task.craftPersonName = "";
+                            //            if (real.CraftPersonID != null)
+                            //            {
+                            //                var staff = model.JDJS_PDMS_Staff_Table.Where(r => r.ID == real.CraftPersonID && r.state == "正常").FirstOrDefault();
+                            //                if (staff != null)
+                            //                {
+                            //                    task.craftPersonName = staff.StaffName;
+                            //                    string str = task.craftPersonID.ToString();
+                            //                    str = str.Insert(0, EmployeeManage.GetPersonAllIdByStaffIDOnPosition(Convert.ToInt32(staff.PosiationID)) + "_");
+                            //                    task.personAllId = str;
+                            //                }
+                            //            }
+
+                            //            task.creatPersonID = real.CreatPersonID == null ? 0 : Convert.ToInt32(real.CreatPersonID);
+                            //            task.creatPersonName = "";
+                            //            if (real.CreatPersonID != null)
+                            //            {
+                            //                var staff = model.JDJS_PDMS_Staff_Table.Where(r => r.ID == real.CreatPersonID && r.state == "正常").FirstOrDefault();
+                            //                if (staff != null)
+                            //                {
+                            //                    task.creatPersonName = staff.StaffName;
+                            //                }
+                            //            }
+                            //            task.creatTime = real.CreatTime == null ? DateTime.Now : Convert.ToDateTime(real.CreatTime);
+                            //            task.creatTimeStr = real.CreatTime == null ? "" : real.CreatTime.ToString().Substring(0, real.CreatTime.ToString().LastIndexOf(':'));
+                            //            task.demandTime = real.DemandTime == null ? DateTime.Now : Convert.ToDateTime(real.DemandTime);
+                            //            task.demandTimeStr = real.DemandTime == null ? "" : real.DemandTime.ToString().Substring(0, real.DemandTime.ToString().LastIndexOf(':'));
+                            //            task.id = real.ID;
+                            //            task.lastAlterPersonID = real.LastAlterPersonID == null ? 0 : Convert.ToInt32(real.LastAlterPersonID);
+                            //            task.lastAlterPersonName = "";
+                            //            if (real.LastAlterPersonID != null)
+                            //            {
+                            //                var staff = model.JDJS_PDMS_Staff_Table.Where(r => r.ID == real.LastAlterPersonID && r.state == "正常").FirstOrDefault();
+                            //                if (staff != null)
+                            //                {
+                            //                    task.lastAlterPersonName = staff.StaffName;
+                            //                }
+                            //            }
+                            //            task.lastAlterTime = real.LastAlterTime == null ? DateTime.Now : Convert.ToDateTime(real.LastAlterTime);
+                            //            task.lastAlterTimeStr = real.LastAlterTime == null ? "" : real.LastAlterTime.ToString().Substring(real.LastAlterTime.ToString().LastIndexOf(':'));
+                            //            task.allConponentNum = orderNum + real.TaskNum;
+                            //            task.otherFilePath = real.OtherFilePath == null ? "" : real.OtherFilePath;
+                            //            task.otherFileTime = real.OtherFileTime == null ? DateTime.Now : Convert.ToDateTime(real.OtherFileTime);
+                            //            task.otherFileTimeStr = real.OtherFileTime == null ? "" : real.OtherFileTime.ToString().Substring(0, real.OtherFileTime.ToString().LastIndexOf(':'));
+                            //            task.planCompletionTime = real.PlanCompletionTime == null ? DateTime.Now.AddYears(1) : Convert.ToDateTime(real.PlanCompletionTime);
+                            //            task.planCompletionTimeStr = real.PlanCompletionTime == null ? "" : real.PlanCompletionTime.ToString().Substring(0, real.PlanCompletionTime.ToString().LastIndexOf(':'));
+                            //            task.planEndTime = real.PlanEndTime == null ? DateTime.Now.AddYears(1) : Convert.ToDateTime(real.PlanEndTime);
+                            //            task.planEndTimeStr = real.PlanEndTime == null ? "" : real.PlanEndTime.ToString().Substring(0, real.PlanEndTime.ToString().LastIndexOf(':'));
+                            //            task.planStartTime = real.PlanStartTime == null ? DateTime.Now : Convert.ToDateTime(real.PlanStartTime);
+                            //            task.planStartTimeStr = real.PlanStartTime == null ? "" : real.PlanStartTime.ToString().Substring(0, real.PlanStartTime.ToString().LastIndexOf(':'));
+                            //            task.processCardUploadPath = real.ProcessCardUploadPath == null ? "" : real.ProcessCardUploadPath;
+                            //            task.processCardUploadTime = real.ProcessCardUploadTime == null ? DateTime.Now : Convert.ToDateTime(real.ProcessCardUploadTime);
+                            //            task.processCardUploadTimeStr = real.ProcessCardUploadTime == null ? "" : real.ProcessCardUploadTime.ToString().Substring(0, real.ProcessCardUploadTime.ToString().LastIndexOf(':'));
+                            //            task.processFileUploadPath = real.ProcessFileUploadPath == null ? "" : real.ProcessFileUploadPath;
+                            //            task.processFileUploadTime = real.ProcessFileUploadTime == null ? DateTime.Now : Convert.ToDateTime(real.ProcessFileUploadTime);
+                            //            task.processFileUploadTimeStr = real.ProcessFileUploadTime == null ? "" : real.ProcessFileUploadTime.ToString().Substring(0, real.ProcessFileUploadTime.ToString().LastIndexOf(':'));
+                            //            if (real.ProcessFileUploadTime == null)
+                            //            {
+                            //                DateTime time = new DateTime();
+                            //                if (TaskInfoManage . GetIFDatabaseInfoAboutPercessFile(real.TaskName + "-" + real.TaskNum + "-10", out time))
+                            //                {
+                            //                    task.processFileUploadTime = time;
+                            //                    task.processFileUploadTimeStr = time == null ? "" : time.ToString().Substring(0, time.ToString().LastIndexOf(':'));
+                            //                }
+                            //            }
+
+                            //            task.processScheduleUpPath = item.ProcessScheduleUpPath == null ? "" : item.ProcessScheduleUpPath;
+                            //            task.processScheduleUpTime = item.ProcessScheduleUpTime == null ? DateTime.Now : Convert.ToDateTime(item.ProcessScheduleUpTime);
+                            //            task.processScheduleUpTimeStr = item.ProcessScheduleUpTime == null ? "" : item.ProcessScheduleUpTime.ToString().Substring(0, item.ProcessScheduleUpTime.ToString().LastIndexOf(':'));
+                            //            task.ToolingDrawingsUploadPath = item.ToolingDrawingsUploadPath == null ? "" : item.ToolingDrawingsUploadPath;
+                            //            task.ToolingDrawingsUploadTime = item.ToolingDrawingsUploadTime == null ? DateTime.Now : Convert.ToDateTime(item.ToolingDrawingsUploadTime);
+                            //            task.ToolingDrawingsUploadTimeStr = item.ToolingDrawingsUploadTime == null ? "" : item.ToolingDrawingsUploadTime.ToString().Substring(0, item.ToolingDrawingsUploadTime.ToString().LastIndexOf(':'));
+                            //            task.ToolTableFileUploadPath = item.ToolTableFileUploadPath == null ? "" : item.ToolTableFileUploadPath;
+                            //            task.ToolTableFileUploadTime = item.ToolTableFileUploadTime == null ? DateTime.Now : Convert.ToDateTime(item.ToolTableFileUploadTime);
+                            //            task.ToolTableFileUploadTimeStr = item.ToolTableFileUploadTime == null ? "" : item.ToolTableFileUploadTime.ToString().Substring(0, item.ToolTableFileUploadTime.ToString().LastIndexOf(':'));
+                            //            task.staffID = item.staffID == null ? 0 : Convert.ToInt32(item.staffID);
+                            //            task.staffName = "";
+                            //            if (item.staffID != null)
+                            //            {
+                            //                var staff = model.JDJS_PDMS_Staff_Table.Where(r => r.ID == item.staffID && r.state == "正常").FirstOrDefault();
+                            //                if (staff != null)
+                            //                {
+                            //                    task.staffName = staff.StaffName;
+                            //                }
+                            //            }
+                            //            task.state = item.state;
+                            //            task.taskName = item.TaskName;
+                            //            task.taskNum = item.TaskNum;
+                            //            task.taskState = item.TaskState == null ? 0 : Convert.ToInt32(item.TaskState);
+                            //            task.version = item.Version == null ? 0 : Convert.ToInt32(item.Version);
+                            //            task.allTaskNum = 1;
+                            //            task.unfinishedNum = 1;
+                            //            unfinish++;
+                            //            switch (task.taskState)
+                            //            {
+                            //                case 0:
+                            //                    task.taskStateStr = "待完成";
+                            //                    break;
+                            //                case 1:
+                            //                    task.taskStateStr = "待完成";
+                            //                    break;
+                            //                case 2:
+                            //                    task.taskStateStr = "待完成";
+                            //                    break;
+                            //                case 3:
+                            //                    task.taskStateStr = "待完成";
+                            //                    break;
+                            //                case 4:
+                            //                    task.taskStateStr = "待完成";
+                            //                    break;
+                            //                case 5:
+                            //                    task.taskStateStr = "已完成";
+                            //                    unfinish--;
+                            //                    task.unfinishedNum--;
+                            //                    break;
+                            //                case 6:
+                            //                    break;
+                            //                case 7:
+                            //                    break;
+                            //                case 8:
+                            //                    break;
+                            //                default:
+                            //                    break;
+
+                            //            }
+                            //            task.previewCategory = new List<int>();
+                            //            var types = model.JDJS_PDMS_Task_ProcessType_Table.Where(r => r.TaskID == item.ID && r.state == "正常");
+                            //            foreach (var type in types)
+                            //            {
+                            //                task.previewCategory.Add(Convert.ToInt32(type.CategoryTypeID));
+                            //            }
+                            //            task.ispart = true;
+                            //            task.previewCategoryStr = "";
+                            //            foreach (var type in task.previewCategory)
+                            //            {
+                            //                var jd = model.JDJS_PDMS_Task_Preview_Category_Table.Where(r => r.ID == type && r.state == "正常").FirstOrDefault();
+                            //                if (jd != null)
+                            //                {
+                            //                    task.previewCategoryStr += jd.ProcessingType + ",";
+                            //                }
+                            //            }
+                            //            if (task.previewCategoryStr.Length > 0)
+                            //            {
+                            //                task.previewCategoryStr = task.previewCategoryStr.Substring(0, task.previewCategoryStr.Length - 1);
+                            //            }
+
+
+                            //            taskInfos.Add(task);
+
+
+                            //        }
+                            //    }
+                            //    unfinishNum = unfinish;
+                            //    taskInfos = taskInfos.OrderBy(r => r.taskState).ThenBy(r => r.planEndTime).ToList();
+                            //    return taskInfos;
+                            //}
+                            //catch (Exception ex)
+                            //{
+                            //    unfinishNum = 0;
+                            //    return null;
+                            //}
+                        }
+
                         compontInfo.children.AddRange(list);
                         compontInfo.allTaskNum += list.Count();
                         compontInfo.unfinishedNum += unfinish;
 
-                        if (!(compontInfo.taskStateStr == "已完成" && compontInfo.unfinishedNum < 1 && (unendFlag)))
+                        if (compontInfo.taskStateStr == "已完成" && compontInfo.unfinishedNum > 0)
                         {
                             compontInfo.taskStateStr = "待完成";
                         }
@@ -409,15 +582,11 @@ namespace 北京工艺文件管理MVC.Models
                             }
 
                         }
-                        var unendFlag = true;
+
                         compontInfo.children = CompontInfoManage.GetTaskInfoCreate(model,item.ID, compontInfo.allConponentNum + ".");
 
                         {
-                            var count = compontInfo.children.Where(r => r.taskStateStr !="已完成").Count();
-                            if (count > 0)
-                            {
-                                unendFlag = false;
-                            }
+
 
                         }
 
@@ -435,7 +604,7 @@ namespace 北京工艺文件管理MVC.Models
                         compontInfo.allTaskNum += list.Count();
                         compontInfo.unfinishedNum += unfinish;
 
-                        if (!(compontInfo.taskStateStr == "已完成" && compontInfo.unfinishedNum < 1&&(unendFlag)))
+                        if (compontInfo.taskStateStr == "已完成" && compontInfo.unfinishedNum > 0)
                         {
                             compontInfo.taskStateStr = "待完成";
                         }
@@ -1506,14 +1675,10 @@ namespace 北京工艺文件管理MVC.Models
                         {
                             try
                             {
-                                compont.TaskState = 5;
-                                compont.CompontState = 5;
                                 bool isAlter = false;
                                 if (compont.ComponentName != compontName)
                                 {
                                     DatabaseList da = DatabaseList.GetData();
-                                    da.JDJS_PDMS_CompontInfo_Table.Where(r => r.ID == compontID).First().TaskState = 5;
-                                    da.JDJS_PDMS_CompontInfo_Table.Where(r => r.ID == compontID).First().CompontState = 5;
                                     da.JDJS_PDMS_CompontInfo_Table.Where(r => r.ID == compontID).First().ComponentName = compontName;
                                     da.JDJS_PDMS_CompontInfo_Table.Where(r => r.ID == compontID).First().CraftPersonID = null;
                                     string name = compont.ComponentName;
@@ -1534,8 +1699,6 @@ namespace 北京工艺文件管理MVC.Models
                                 if (compont.PlanStartTime != planStartTime)
                                 {
                                     DatabaseList da = DatabaseList.GetData();
-                                    da.JDJS_PDMS_CompontInfo_Table.Where(r => r.ID == compontID).First().TaskState = 5;
-                                    da.JDJS_PDMS_CompontInfo_Table.Where(r => r.ID == compontID).First().CompontState = 5;
                                     da.JDJS_PDMS_CompontInfo_Table.Where(r => r.ID == compontID).First().CraftPersonID = null;
                                     da.JDJS_PDMS_CompontInfo_Table.Where(r => r.ID == compontID).First().PlanStartTime = planStartTime;
                                     string time = compont.PlanStartTime == null ? "" : compont.PlanStartTime.ToString();
@@ -1556,8 +1719,6 @@ namespace 北京工艺文件管理MVC.Models
                                 if (compont.PlanEndTime != planEndTime)
                                 {
                                     DatabaseList da = DatabaseList.GetData();
-                                    da.JDJS_PDMS_CompontInfo_Table.Where(r => r.ID == compontID).First().TaskState = 5;
-                                    da.JDJS_PDMS_CompontInfo_Table.Where(r => r.ID == compontID).First().CompontState = 5;
                                     da.JDJS_PDMS_CompontInfo_Table.Where(r => r.ID == compontID).First().CraftPersonID = null;
                                     da.JDJS_PDMS_CompontInfo_Table.Where(r => r.ID == compontID).First().PlanEndTime = planEndTime;
                                     string time = compont.PlanEndTime == null ? "" : compont.PlanEndTime.ToString();
@@ -1596,7 +1757,7 @@ namespace 北京工艺文件管理MVC.Models
                                 compont.CraftPersonID = null;
                                 compont.TaskState = 5;
 
-                                if (true)
+                                if (isAlter)
                                 {
                                     DatabaseList da = DatabaseList.GetData();
                                     da.JDJS_PDMS_CompontInfo_Table.Where(r => r.ID == compontID).First().CraftPersonID = null;
@@ -1634,16 +1795,12 @@ namespace 北京工艺文件管理MVC.Models
                             errMsg = "该编号已存在，请重新输入！";
                             return false;
                         }
-                        compont.TaskState = 5;
-                        compont.CompontState = 5;
                         string compontNumOld = compont.ComponentNum;
                         using (System.Data.Entity.DbContextTransaction mytran = model.Database.BeginTransaction())
                         {
                             try
                             {
                                 DatabaseList da = DatabaseList.GetData();
-                                da.JDJS_PDMS_CompontInfo_Table.Where(r => r.ID == compontID).First().TaskState = 5;
-                                da.JDJS_PDMS_CompontInfo_Table.Where(r => r.ID == compontID).First().CompontState = 5;
                                 da.JDJS_PDMS_CompontInfo_Table.Where(r => r.ID == compontID).First().ComponentNum = compontNum;
                                 da.JDJS_PDMS_CompontInfo_Table.Where(r => r.ID == compontID).First().CraftPersonID = null;
                                 string num = compont.ComponentNum;
