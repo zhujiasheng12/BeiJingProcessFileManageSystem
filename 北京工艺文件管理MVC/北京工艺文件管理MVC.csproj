@@ -63,6 +63,10 @@
       <HintPath>..\packages\JetEntityFrameworkProvider.6.1.4\lib\JetEntityFrameworkProvider.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="MailSend, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>C:\Users\82144\Desktop\MailSend.dll</HintPath>
+    </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Spire.Doc, Version=8.4.10.0, Culture=neutral, PublicKeyToken=663f351905198cb3, processorArchitecture=MSIL">
       <HintPath>..\packages\Spire.Doc.8.4.10\lib\net40\Spire.Doc.dll</HintPath>
@@ -188,6 +192,7 @@
     <Compile Include="Models\DatabaseList.cs" />
     <Compile Include="Models\DeleteOldTask.cs" />
     <Compile Include="Models\EmployeeManage.cs" />
+    <Compile Include="Models\MailSendMethod.cs" />
     <Compile Include="Models\SupplementaryInformation.cs" />
     <Compile Include="Models\TaskInfoManage.cs" />
     <Compile Include="Models\ZipHelpClass.cs" />
